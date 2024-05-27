@@ -3,21 +3,34 @@ extern crate csv;
 use std::error::Error;
 use std::fs::File;
 
-fn read_file() -> Result<(), Box<dyn Error>>{
+fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut contant = csv::ReaderBuilder::new().has_headers(false).from_reader(file); // Disable headers assumption not not skip first row
+    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption not not skip first row
 
-    for tupel in contant.records() {
-        let record = tupel?;
+    let mut records = Vec::new();
+    for line in contant.records() {
+        let record = line?;
 
-        for value in record.iter() {
-            print!("{} ", value);
+        if record.len() != 4 {
+            println!("Record length:{:?}",record.len());
+            return Err("Incorrect number of fields in record".into());
         }
-        println!();
+
+        let name = record[0].to_string();
+        let a: i32 = record[1].parse()?;
+        let b: i32 = record[2].parse()?;
+        let c: i32 = record[3].parse()?;
+
+        records.push((name, a, b, c));
     }
-    Ok(())
+    Ok(records)
 }
 
-fn main() {
-   let _ = read_file();
+fn main() -> Result<(), Box<dyn Error>>{
+   let data = read_file()?;
+
+   for tupel in data {
+    println!("{:?}", tupel);
+    }
+   Ok(())
 }
