@@ -2,7 +2,7 @@ extern crate csv;
 
 use std::error::Error;
 use std::fs::File;
-use rdma_core::Rdma;
+use rdma::Rdma;
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
