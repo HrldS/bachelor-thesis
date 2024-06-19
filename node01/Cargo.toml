@@ -3,5 +3,11 @@ name = "bachelor-thesis_cargo"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "bachelor-thesis_cargo"
+path = "main.rs"
+
 [dependencies]
 csv = "1.1"
+async-rdma = {git = "https://github.com/datenlord/async-rdma/"}
+tokio = { version = "1", features = ["full"] }
