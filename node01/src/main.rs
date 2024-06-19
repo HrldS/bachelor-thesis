@@ -2,6 +2,7 @@ extern crate csv;
 
 use std::error::Error;
 use std::fs::File;
+use rdma_core::Rdma;
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -29,8 +30,10 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
 fn main() -> Result<(), Box<dyn Error>>{
    let data = read_file()?;
 
-   for tupel in data {
-    println!("{:?}", tupel);
+    for tupel in data {
+        println!("{:?}", tupel);
     }
-   Ok(())
+
+    let rdma = Rdma::new().expect("Failed to create RDMA instance");
+    Ok(())
 }
