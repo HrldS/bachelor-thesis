@@ -3,6 +3,7 @@ extern crate csv;
 use std::error::Error;
 use std::fs::File;
 use async_rdma::Rdma;
+use std::io;
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -28,12 +29,22 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
 }
 
 fn main() -> Result<(), Box<dyn Error>>{
-   let data = read_file()?;
 
-    for tupel in data {
-        println!("{:?}", tupel);
+    let mut line = String::new();
+    println!("Enter transportation Protol:");
+    println!("Protocols available: rdma or tcp");
+    let input = io::stdin().read_line(&mut line).unwrap();
+
+    if input.as_str() == "rdma" {
+        let data = read_file()?;
+
+        for tupel in data {
+            println!("{:?}", tupel);
+        }
+
+    } else {
+        println!("TCP FOUND");
     }
 
-    let rdma = Rdma::new().expect("Failed to create RDMA instance");
     Ok(())
 }
