@@ -30,10 +30,11 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
 
 fn main() -> Result<(), Box<dyn Error>>{
 
-    let mut line = String::new();
+    let mut input = String::new();
     println!("Enter transportation Protol:");
     println!("Protocols available: rdma or tcp");
-    let input = io::stdin().read_line(&mut line);
+
+    io::stdin().read_line(&mut input).expect("failed to read");
 
     if input == "rdma" {
         let data = read_file()?;
