@@ -33,7 +33,7 @@ fn main() -> Result<(), Box<dyn Error>>{
     let mut line = String::new();
     println!("Enter transportation Protol:");
     println!("Protocols available: rdma or tcp");
-    let input = io::stdin().read_line(&mut line).unwrap();
+    let input = io::stdin().read_line(&mut line);
 
     if input == "rdma" {
         let data = read_file()?;
