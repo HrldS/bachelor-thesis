@@ -36,6 +36,8 @@ fn main() -> Result<(), Box<dyn Error>>{
 
     io::stdin().read_line(&mut input).expect("failed to read");
 
+    let input = input.trim();
+    
     if input == "rdma" {
         let data = read_file()?;
 
