@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn Error>>{
         }
 
     } else {
-        println!("TCP FOUND");
+        println!(input);
     }
 
     Ok(())
