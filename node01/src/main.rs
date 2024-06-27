@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>>{
     println!("Protocols available: rdma or tcp");
     let input = io::stdin().read_line(&mut line).unwrap();
 
-    if input.as_str() == "rdma" {
+    if &input == "rdma" {
         let data = read_file()?;
 
         for tupel in data {
