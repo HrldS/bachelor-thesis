@@ -1,0 +1,14 @@
+C:\Users\haral\Desktop\bachelor_git\node01\target\debug\deps\libclang_sys-8b18f944d3df2797.rmeta: C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/macros.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/common.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/dynamic.rs
+
+C:\Users\haral\Desktop\bachelor_git\node01\target\debug\deps\libclang_sys-8b18f944d3df2797.rlib: C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/macros.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/common.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/dynamic.rs
+
+C:\Users\haral\Desktop\bachelor_git\node01\target\debug\deps\clang_sys-8b18f944d3df2797.d: C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/macros.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/common.rs C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/dynamic.rs
+
+C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\lib.rs:
+C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\support.rs:
+C:\Users\haral\.cargo\registry\src\index.crates.io-6f17d22bba15001f\clang-sys-1.8.1\src\link.rs:
+C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/macros.rs:
+C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/common.rs:
+C:\Users\haral\Desktop\bachelor_git\node01\target\debug\build\clang-sys-e9f869e39597652a\out/dynamic.rs:
+
+# env-dep:OUT_DIR=C:\\Users\\haral\\Desktop\\bachelor_git\\node01\\target\\debug\\build\\clang-sys-e9f869e39597652a\\out
