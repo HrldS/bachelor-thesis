@@ -43,6 +43,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma_listener = RdmaListener::bind(addr).await?;
     let _rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
+    println!("connected");
     Ok(())
 }
 
