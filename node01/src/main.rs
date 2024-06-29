@@ -68,7 +68,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
         println!("{}",input);
     }
 
-    let addr = SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), pick_unused_port().unwrap());
+    let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
     std::thread::spawn(move || server(addr));
     tokio::time::sleep(Duration::from_secs(3)).await;
     client(addr).await.map_err(|err| println!("{}", err)).unwrap();
