@@ -39,6 +39,14 @@ async fn client(addr: SocketAddrV4) -> io::Result<()> {
 }
 
 #[tokio::main]
+async fn server(addr: SocketAddrV4) -> io::Result<()> {
+    let rdma_listener = RdmaListener::bind(addr).await?;
+    let _rdma = rdma_listener.accept(1, 1, 512).await?;
+    // run here after client connect
+    Ok(())
+}
+
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>>{
 
     let mut input = String::new();
@@ -60,7 +68,9 @@ async fn main() -> Result<(), Box<dyn Error>>{
         println!("{}",input);
     }
 
-    let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 52), pick_unused_port().unwrap());
+    let addr = SocketAddrV4::new(Ipv4Addr::new(127, 0, 0, 1), pick_unused_port().unwrap());
+    std::thread::spawn(move || server(addr));
+    tokio::time::sleep(Duration::from_secs(3)).await;
     client(addr).await.map_err(|err| println!("{}", err)).unwrap();
 
     Ok(())
