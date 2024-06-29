@@ -2,8 +2,13 @@ extern crate csv;
 
 use std::error::Error;
 use std::fs::File;
-use async_rdma::Rdma;
-use std::io;
+use async_rdma::{Rdma, RdmaListener};
+use portpicker::pick_unused_port;
+use std::{
+    io,
+    net::{Ipv4Addr, SocketAddrV4},
+    time::Duration 
+};
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -28,16 +33,22 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     Ok(records)
 }
 
-fn main() -> Result<(), Box<dyn Error>>{
+async fn client(addr: SocketAddrV4) -> io::Result<()> {
+    let _rdma = Rdma::connect(addr, 1, 1, 512).await?;
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>>{
 
     let mut input = String::new();
     println!("Enter transportation Protol:");
-    println!("Protocols available: rdma or tcp");
+    println!("Protocols available: 'rdma' or 'tcp'");
 
     io::stdin().read_line(&mut input).expect("failed to read");
 
     let input = input.trim();
-    
+
     if input == "rdma" {
         let data = read_file()?;
 
@@ -48,6 +59,9 @@ fn main() -> Result<(), Box<dyn Error>>{
     } else {
         println!("{}",input);
     }
+
+    let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 52), pick_unused_port().unwrap());
+    client(addr).await.map_err(|err| println!("{}", err)).unwrap();
 
     Ok(())
 }
