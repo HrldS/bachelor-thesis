@@ -44,12 +44,16 @@ impl ReadLine for [u8] {
 impl WriteLine for [u8] {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
         let mut this = self;
-        let line_str = line.iter().collect::<Vec<_>>().join(";"); // Convert the line to a comma-separated string
+        let line_str = line.iter().collect::<Vec<_>>().join(";"); // Convert the line to a semicolon-separated string
 
         println!("Debug WriteLine: {:?}", line_str);
         println!();
 
         let bytes = line_str.as_bytes(); // Convert the string to bytes
+
+        println!("Debug WriteLine: {:?}", bytes);
+        println!();
+
         this.write(bytes) // Write the bytes to the memory region
     }
 }
