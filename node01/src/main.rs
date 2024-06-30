@@ -28,10 +28,14 @@ impl ReadLine for [u8] {
             Err(e) => return Err(IOError::new(ErrorKind::InvalidData, e)),
         };
         
-        // Parse the string into a CSV record
-        let record = line_str.parse::<StringRecord>()?;
+        //Parse the string into a CSV record
+        let mut reader = csv::ReaderBuilder::new().has_headers(false).from_reader(line_str.as_bytes());
         
-        Ok(record)
+        if let Some(result) = reader.records().next() {
+            result.map_err(|e| IOError::new(ErrorKind::InvalidData, e))
+        } else {
+            Err(IOError::new(ErrorKind::UnexpectedEof, "No CSV record found"))
+        }
     }
 }
 
