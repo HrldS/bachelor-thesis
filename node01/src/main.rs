@@ -25,7 +25,7 @@ impl ReadLine for [u8] {
         // Convert bytes back to a string
         let line_str = match std::str::from_utf8(self) {
             Ok(s) => s,
-            Err(e) => return Err(e),
+            Err(e) => return Err(Error::new(ErrorKind::Other, e)),
         };
         
         // Parse the string into a CSV record
