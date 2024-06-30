@@ -89,6 +89,8 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
 
                 let mut lmr = rdma.alloc_local_mr(layout)?;
                 let mut rmr = rdma.request_remote_mr(layout).await?;
+                
+                println!("Debug Client: {:?}", line);
 
                 let _num = lmr.as_mut_slice().write_csv_record(&line)?;
                 rdma.write(&lmr, &mut rmr).await?;
@@ -110,7 +112,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
-    println("Debug Server: {:?}", lmr.as_slice());
+    println!("Debug Server: {:?}", lmr.as_slice());
     let lmr_contant = lmr.as_slice().read_line()?;
     println!("Server received: {:?}", lmr_contant);
     Ok(())
