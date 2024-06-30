@@ -29,7 +29,7 @@ impl ReadLine for [u8] {
         };
         
         //Parse the string into a CSV record
-        let mut reader = csv::ReaderBuilder::new().has_headers(false)..delimiter(b';').from_reader(line_str.as_bytes());
+        let mut reader = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(line_str.as_bytes());
         
         if let Some(result) = reader.records().next() {
             result.map_err(|e| IOError::new(ErrorKind::InvalidData, e))
