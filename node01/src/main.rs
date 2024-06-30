@@ -121,7 +121,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     println!("Debug Server: {:?}", lmr.as_slice());
     println!();
 
-    let lmr_contant = *lmr.read_line()?; //.as_slice()
+    let lmr_contant = lmr.as_slice().read_line()?; 
     println!("Server received: {:?}", lmr_contant);
     Ok(())
 }
