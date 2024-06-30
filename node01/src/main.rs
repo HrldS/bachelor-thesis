@@ -70,7 +70,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
     let lmr_contant = *lmr.as_ptr();
-    println!("Server received: {}", lmr_contant);
+    println!("Server received: {:?}", lmr_contant);
     Ok(())
 }
 
@@ -107,18 +107,18 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     client(addr, protocol, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
                     break;
                 } else if rdma_type == "atomic" {
-                    println!("{}", rdma_type);
+                    println!("{:?}", rdma_type);
                     break;
                 } else {
-                    println!("Transmission type:{} does not exists!", rdma_type);
+                    println!("Transmission type:{:?} does not exists!", rdma_type);
                 }
             }
             break;
         } else if protocol == "tcp" {
-            println!("{}",protocol);
+            println!("{:?}",protocol);
             break;
         } else {
-            println!("Protocol: {} does not exists!", protocol);
+            println!("Protocol: {:?} does not exists!", protocol);
         }
     }
     Ok(())
