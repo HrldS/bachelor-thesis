@@ -13,7 +13,7 @@ use std::{
 };
 
 trait WriteLine {
-    fn write_line(&mut self, line: &StringRecord) -> io::Result<usize>;
+    fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize>;
 }
 
 impl WriteLine for [u8] {
