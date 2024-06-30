@@ -28,9 +28,11 @@ impl ReadLine for [u8] {
             Err(e) => return Err(IOError::new(ErrorKind::InvalidData, e)),
         };
         
+        println!("Debug: {:?}", line_str);
         //Parse the string into a CSV record
         let mut reader = csv::ReaderBuilder::new().has_headers(false).from_reader(line_str.as_bytes());
         
+
         if let Some(result) = reader.records().next() {
             result.map_err(|e| IOError::new(ErrorKind::InvalidData, e))
         } else {
@@ -42,7 +44,7 @@ impl ReadLine for [u8] {
 impl WriteLine for [u8] {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
         let mut this = self;
-        let line_str = line.iter().collect::<Vec<_>>().join(";"); // Convert the line to a comma-separated string
+        let line_str = line.iter().collect::<Vec<_>>().join(","); // Convert the line to a comma-separated string
         let bytes = line_str.as_bytes(); // Convert the string to bytes
         this.write(bytes) // Write the bytes to the memory region
     }
