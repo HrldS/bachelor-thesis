@@ -7,7 +7,7 @@ use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
 use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
-    io::{self, Write},
+    io::{self, Write, Error as I/OError, ErrorKind},
     net::{Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
@@ -25,7 +25,7 @@ impl ReadLine for [u8] {
         // Convert bytes back to a string
         let line_str = match std::str::from_utf8(self) {
             Ok(s) => s,
-            Err(e) => return Err(<dyn Error>::other("{:?}",e)),
+            Err(e) => return Err(I/OError::new(ErrorKind::InvalidData, e)),
         };
         
         // Parse the string into a CSV record
