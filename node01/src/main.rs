@@ -83,6 +83,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     println!("You have to choose between 'send', 'write' or 'atomic'!");
                 }
             }
+            break;
         } else if input == "tcp" {
             println!("{}",input);
             break;
