@@ -31,7 +31,7 @@ impl ReadLine for [u8] {
         println!("Debug ReadLine: {:?}", line_str);
         println!();
         //Parse the string into a CSV record
-        let mut reader = csv::ReaderBuilder::new().has_headers(false).from_reader(line_str.as_bytes());
+        let mut reader = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(line_str.as_bytes());
         
 
         if let Some(result) = reader.records().next() {
