@@ -1,5 +1,6 @@
 extern crate csv;
 
+use csv::StringRecord;
 use std::error::Error;
 use std::fs::File;
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
@@ -10,6 +11,18 @@ use std::{
     net::{Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
+
+trait WriteLine {
+    fn write_line(&mut self, line: &StringRecord) -> io::Result<usize>;
+}
+
+impl WriteLine for [u8] {
+    fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
+        let line_str = line.iter().collect::<Vec<_>>().join(","); // Convert the line to a comma-separated string
+        let bytes = line_str.as_bytes(); // Convert the string to bytes
+        self.write(bytes) // Write the bytes to the memory region
+    }
+}
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -43,13 +56,15 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
         let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
         for line in contant.records() {
+            let line = line?;
+
             if rdma_type == "write" {
                 let layout = Layout::for_value(&line);
 
                 let mut lmr = rdma.alloc_local_mr(layout)?;
                 let rmr = rdma.request_remote_mr(layout).await?;
 
-                let _num = lmr.as_mut_slice().write(&line)?;
+                let _num = lmr.as_mut_slice().write_csv_record(&line)?;
                 rdma.write(&lmr, &mut rmr).await?;
 
                 rdma.send_remote_mr(rmr).await?;
