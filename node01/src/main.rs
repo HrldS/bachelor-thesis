@@ -49,41 +49,40 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>>{
-
-    let mut input = String::new();
-    println!("Enter transportation Protocol:");
-    println!("Protocols available: 'rdma' or 'tcp'");
-
-    io::stdin().read_line(&mut input).expect("failed to read");
-
-    let input = input.trim();
-
     loop {
-        if input == "rdma" {
+        let mut input = String::new();
+        println!("Enter transportation Protocol:");
+        println!("Protocols available: 'rdma' or 'tcp'");
 
-            println!("Please choose RDMA transmission Type: send, write or atomic");
-            let mut rdma_type = String::new();
-            io::stdin().read_line(&mut rdma_type).expect("failed to read");
-    
-            let rdma_type = rdma_type.trim();
-    
-            if rdma_type == "send" {
-                let data = read_file()?;
-    
-                for tupel in data {
-                    println!("{:?}", tupel);
+        io::stdin().read_line(&mut input).expect("failed to read");
+
+        let input = input.trim();
+
+        if input == "rdma" {
+            loop {
+                println!("Please choose RDMA transmission Type: send, write or atomic");
+                let mut rdma_type = String::new();
+                io::stdin().read_line(&mut rdma_type).expect("failed to read");
+        
+                let rdma_type = rdma_type.trim();
+        
+                if rdma_type == "send" {
+                    let data = read_file()?;
+        
+                    for tupel in data {
+                        println!("{:?}", tupel);
+                    }
+                    break;
+                } else if rdma_type == "write" {
+                    println!("{}", rdma_type);
+                    break;
+                } else if rdma_type == "atomic" {
+                    println!("{}", rdma_type);
+                    break;
+                } else {
+                    println!("You have to choose between 'send', 'write' or 'atomic'!");
                 }
-                break;
-            } else if rdma_type == "write" {
-                println!("{}", rdma_type);
-                break;
-            } else if rdma_type == "atomic" {
-                println!("{}", rdma_type);
-                break;
-            } else {
-                println!("You have to choose between 'send', 'write' or 'atomic'!");
             }
-            break;
         } else if input == "tcp" {
             println!("{}",input);
             break;
