@@ -33,7 +33,7 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     Ok(records)
 }
 
-async fn client(addr: SocketAddrV4, ) -> io::Result<()> {
+async fn client(addr: SocketAddrV4, protocol: String, rdma_type: String) -> io::Result<()> {
     let _rdma = Rdma::connect(addr, 1, 1, 512).await?;
     Ok(())
 }
