@@ -16,6 +16,22 @@ trait WriteLine {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize>;
 }
 
+trait ReadLine {
+    fn read_line(&self) -> io::Result<StringRecord>;
+}
+
+impl ReadLine for [u8] {
+    fn read_line(&self) -> io::Result<StringRecord> {
+        // Convert bytes back to a string
+        let line_str = std::str::from_utf8(self)?;
+        
+        // Parse the string into a CSV record
+        let record = line_str.parse::<StringRecord>()?;
+        
+        Ok(record)
+    }
+}
+
 impl WriteLine for [u8] {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
         let mut this = self;
@@ -85,7 +101,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
-    let lmr_contant = *lmr.as_slice();
+    let lmr_contant = *lmr.as_slice().read_line()?;
     println!("Server received: {:?}", lmr_contant);
     Ok(())
 }
