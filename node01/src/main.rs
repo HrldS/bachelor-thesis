@@ -1,13 +1,13 @@
 extern crate csv;
 
 use csv::StringRecord;
-//use std::error::Error;
+use std::error::Error;
 use std::fs::File;
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
 use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
-    io::{self, Write, Error, ErrorKind},
+    io::{self, Write},
     net::{Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
@@ -25,7 +25,7 @@ impl ReadLine for [u8] {
         // Convert bytes back to a string
         let line_str = match std::str::from_utf8(self) {
             Ok(s) => s,
-            Err(e) => return Err(Error::new(ErrorKind::InvalidData, e)),
+            Err(e) => return Err(e),
         };
         
         // Parse the string into a CSV record
