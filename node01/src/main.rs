@@ -45,7 +45,7 @@ impl ReadLine for [u8] {
 impl WriteLine for [u8] {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
         let mut this = self;
-        let line_str = line.iter().collect::<Vec<_>>().join(","); // Convert the line to a comma-separated string
+        let line_str = line.iter().collect::<Vec<_>>().join(";"); // Convert the line to a comma-separated string
 
         println!("Debug WriteLine: {:?}", line_str);
         println!();
@@ -118,7 +118,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
-    
+
     println!("Debug Server: {:?}", lmr.as_slice());
     println!();
 
