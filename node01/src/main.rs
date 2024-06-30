@@ -2,7 +2,7 @@ extern crate csv;
 
 use std::error::Error;
 use std::fs::File;
-use async_rdma::{Rdma, RdmaListener};
+use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
 use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
