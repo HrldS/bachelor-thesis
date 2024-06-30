@@ -46,7 +46,7 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
             if rdma_type == "write" {
 
                 let rmr = rdma.request_remote_mr(Layout::new::<line>()).await?;
-                rdma.write(line, &mut rmr).await?;
+                rdma.write(&line, &mut rmr).await?;
 
                 rdma.send_remote_mr(rmr).await?;
             } else {
