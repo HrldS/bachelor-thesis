@@ -6,7 +6,7 @@ use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
 use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
-    io,
+    io::{self, Write},
     net::{Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
