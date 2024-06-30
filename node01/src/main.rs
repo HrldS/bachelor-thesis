@@ -33,7 +33,7 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     Ok(records)
 }
 
-async fn client(addr: SocketAddrV4) -> io::Result<()> {
+async fn client(addr: SocketAddrV4, ) -> io::Result<()> {
     let _rdma = Rdma::connect(addr, 1, 1, 512).await?;
     Ok(())
 }
@@ -74,7 +74,10 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     }
                     break;
                 } else if rdma_type == "write" {
-                    println!("{}", rdma_type);
+                    let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
+                    std::thread::spawn(move || server(addr));
+                    tokio::time::sleep(Duration::from_secs(3)).await;
+                    client(addr, protocol, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
                     break;
                 } else if rdma_type == "atomic" {
                     println!("{}", rdma_type);
@@ -91,11 +94,5 @@ async fn main() -> Result<(), Box<dyn Error>>{
             println!("Protocol: {} does not exists!", protocol);
         }
     }
-
-    let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
-    std::thread::spawn(move || server(addr));
-    tokio::time::sleep(Duration::from_secs(3)).await;
-    client(addr).await.map_err(|err| println!("{}", err)).unwrap();
-
     Ok(())
 }
