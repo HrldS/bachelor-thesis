@@ -12,7 +12,7 @@ use std::{
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption not not skip first row
+    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     let mut records = Vec::new();
     for line in contant.records() {
@@ -51,22 +51,45 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
 async fn main() -> Result<(), Box<dyn Error>>{
 
     let mut input = String::new();
-    println!("Enter transportation Protol:");
+    println!("Enter transportation Protocol:");
     println!("Protocols available: 'rdma' or 'tcp'");
 
     io::stdin().read_line(&mut input).expect("failed to read");
 
     let input = input.trim();
 
-    if input == "rdma" {
-        let data = read_file()?;
+    loop {
+        if input == "rdma" {
 
-        for tupel in data {
-            println!("{:?}", tupel);
+            println!("Please choose RDMA transmission Type: send, write or atomic");
+            let mut rdma_type = String::new();
+            io::stdin().read_line(&mut rdma_type).expect("failed to read");
+    
+            let rdma_type = rdma_type.trim();
+    
+            if rdma_type == "send" {
+                let data = read_file()?;
+    
+                for tupel in data {
+                    println!("{:?}", tupel);
+                }
+                break;
+            } else if rdma_type == "write" {
+                println!("{}", rdma_type);
+                break;
+            } else if rdma_type == "atomic" {
+                println!("{}", rdma_type);
+                break;
+            } else {
+                println!("You have to choose between 'send', 'write' or 'atomic'!");
+            }
+            break;
+        } else if input == "tcp" {
+            println!("{}",input);
+            break;
+        } else {
+            println!("You have to choose between 'rdma' and 'tcp'!");
         }
-
-    } else {
-        println!("{}",input);
     }
 
     let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
