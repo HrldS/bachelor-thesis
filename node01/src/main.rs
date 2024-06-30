@@ -5,6 +5,7 @@ use std::fs::File;
 use async_rdma::{Rdma, RdmaListener};
 use portpicker::pick_unused_port;
 use std::{
+    alloc::Layout,
     io,
     net::{Ipv4Addr, SocketAddrV4},
     time::Duration 
@@ -64,8 +65,8 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
-    let lmr_contant = *lmr;
-    println!("Server received: {}" lmr_contant);
+    let lmr_contant = *lmr.as_ptr();
+    println!("Server received: {}", lmr_contant);
     Ok(())
 }
 
