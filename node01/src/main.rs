@@ -23,10 +23,10 @@ trait ReadLine {
 impl ReadLine for [u8] {
     fn read_line(&self) -> io::Result<StringRecord> {
         // Convert bytes back to a string
-        let line_str = std::str::from_utf8(self);
+        let line_str = std::str::from_utf8(self)?;
         
         // Parse the string into a CSV record
-        let record = line_str?.parse::<StringRecord>()?;
+        let record = line_str.parse::<StringRecord>()?;
         
         Ok(record)
     }
