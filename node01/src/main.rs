@@ -29,6 +29,7 @@ impl ReadLine for [u8] {
         };
         
         println!("Debug ReadLine: {:?}", line_str);
+        println!();
         //Parse the string into a CSV record
         let mut reader = csv::ReaderBuilder::new().has_headers(false).from_reader(line_str.as_bytes());
         
@@ -45,7 +46,10 @@ impl WriteLine for [u8] {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
         let mut this = self;
         let line_str = line.iter().collect::<Vec<_>>().join(","); // Convert the line to a comma-separated string
+
         println!("Debug WriteLine: {:?}", line_str);
+        println!();
+
         let bytes = line_str.as_bytes(); // Convert the string to bytes
         this.write(bytes) // Write the bytes to the memory region
     }
@@ -92,6 +96,7 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
                 let mut rmr = rdma.request_remote_mr(layout).await?;
                 
                 println!("Debug Client: {:?}", line);
+                println!();
 
                 let _num = lmr.as_mut_slice().write_csv_record(&line)?;
                 rdma.write(&lmr, &mut rmr).await?;
@@ -113,7 +118,10 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
+    
     println!("Debug Server: {:?}", lmr.as_slice());
+    println!();
+
     let lmr_contant = lmr.as_slice().read_line()?;
     println!("Server received: {:?}", lmr_contant);
     Ok(())
