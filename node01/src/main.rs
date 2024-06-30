@@ -56,9 +56,9 @@ async fn main() -> Result<(), Box<dyn Error>>{
 
         io::stdin().read_line(&mut input).expect("failed to read");
 
-        let input = input.trim();
+        let protocol = input.trim();
 
-        if input == "rdma" {
+        if protocol == "rdma" {
             loop {
                 println!("Please choose RDMA transmission Type: send, write or atomic");
                 let mut rdma_type = String::new();
@@ -80,15 +80,15 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     println!("{}", rdma_type);
                     break;
                 } else {
-                    println!("You have to choose between 'send', 'write' or 'atomic'!");
+                    println!("Transmission type:{} does not exists!", rdma_type);
                 }
             }
             break;
-        } else if input == "tcp" {
-            println!("{}",input);
+        } else if protocol == "tcp" {
+            println!("{}",protocol);
             break;
         } else {
-            println!("You have to choose between 'rdma' and 'tcp'!");
+            println!("Protocol: {} does not exists!", protocol);
         }
     }
 
