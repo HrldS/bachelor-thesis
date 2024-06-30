@@ -62,7 +62,7 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
                 let layout = Layout::for_value(&line);
 
                 let mut lmr = rdma.alloc_local_mr(layout)?;
-                let rmr = rdma.request_remote_mr(layout).await?;
+                let mut rmr = rdma.request_remote_mr(layout).await?;
 
                 let _num = lmr.as_mut_slice().write_csv_record(&line)?;
                 rdma.write(&lmr, &mut rmr).await?;
