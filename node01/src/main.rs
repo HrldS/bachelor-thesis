@@ -34,16 +34,38 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
 }
 
 async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Result<()> {
-    let _rdma = Rdma::connect(addr, 1, 1, 512).await?;
+    if protocol == "rdma" {
+
+        let rdma = Rdma::connect(addr, 1, 1, 512).await?;
+
+        let file = File::open("src/data/test_data.csv")?;  //? try reading file
+        let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+
+        for line in contant.records() {
+            if rdma_type == "write" {
+
+                let rmr = rdma.request_remote_mr(Layout::new::<line>()).await?;
+                rdma.write(line, &mut rmr).await?;
+
+                rdma.send_remote_mr(rmr).await?;
+            } else {
+                println!("not write");
+            }
+        }
+    } else {
+        println!("client: tcp");
+    }
     Ok(())
 }
 
 #[tokio::main]
 async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma_listener = RdmaListener::bind(addr).await?;
-    let _rdma = rdma_listener.accept(1, 1, 512).await?;
+    let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
-    println!("connected");
+    let lmr = rdma.receive_local_mr().await?;
+    let lmr_contant = *lmr;
+    println!("Server received: {}" lmr_contant);
     Ok(())
 }
 
