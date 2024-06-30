@@ -31,8 +31,7 @@ impl ReadLine for [u8] {
         //Parse the string into a CSV record
         let mut reader = csv::ReaderBuilder::new().has_headers(false).from_reader(line_str.as_bytes());
         
-        let mut records = reader.records();
-        if let Some(result) = records().next() {
+        if let Some(result) = reader.records().next() {
             result.map_err(|e| IOError::new(ErrorKind::InvalidData, e))
         } else {
             Err(IOError::new(ErrorKind::UnexpectedEof, "No CSV record found"))
