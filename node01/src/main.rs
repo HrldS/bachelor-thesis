@@ -17,7 +17,7 @@ trait WriteLine {
 }
 
 impl WriteLine for [u8] {
-    fn write_csv_record(&self, line: &StringRecord) -> io::Result<usize> {
+    fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
         let line_str = line.iter().collect::<Vec<_>>().join(","); // Convert the line to a comma-separated string
         let bytes = line_str.as_bytes(); // Convert the string to bytes
         self.write(bytes) // Write the bytes to the memory region
