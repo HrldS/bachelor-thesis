@@ -26,7 +26,7 @@ impl ReadLine for [u8] {
         let line_str = std::str::from_utf8(self);
         
         // Parse the string into a CSV record
-        let record = line_str.parse::<StringRecord>()?;
+        let record = line_str?.parse::<StringRecord>()?;
         
         Ok(record)
     }
