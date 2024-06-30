@@ -85,8 +85,8 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma = rdma_listener.accept(1, 1, 512).await?;
     // run here after client connect
     let lmr = rdma.receive_local_mr().await?;
-    let lmr_contant = *lmr.as_ptr();
-    println!("Server received: {:?}", lmr_contant);
+    let _lmr_contant = *lmr.as_ptr();
+    println!("Server received: {:?}", lmr);
     Ok(())
 }
 
