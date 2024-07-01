@@ -110,7 +110,20 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
             }
         }
     } else {
-        println!("client: tcp");
+        let mut stream = TcpStream::connect("192.168.100.52:0")?;
+        let remote_end_address = stream.local_addr()?;
+        println!("Server connected to {}", remode_end_adress);
+
+        let file = File::open("src/data/test_data.csv")?;  //? try reading file
+        let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+
+        for line in contant.records() {
+            let record = line?;
+            let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
+            
+            // Write the record to the TCP stream
+            stream.write_all(record_string.as_bytes())?;
+        }
     }
     Ok(())
 }
@@ -171,7 +184,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            println!("{:?}",protocol);
+            client(null, protocol, null);
             break;
         } else {
             println!("Protocol: {:?} does not exists!", protocol);

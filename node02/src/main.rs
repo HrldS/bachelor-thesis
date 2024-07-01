@@ -1,22 +1,32 @@
-use async_rdma::{Rdma, RdmaListener};
-use portpicker::pick_unused_port;
-use std::{
-    io,
-    net::{Ipv4Addr, SocketAddrV4},
-    time::Duration,
-};
+use std::io::{self, BufRead};
+use std::net::{TcpListener, TcpStream};
 
 
-#[tokio::main]
-async fn server(addr: SocketAddrV4) -> io::Result<()> {
-    let rdma_listener = RdmaListener::bind(addr).await?;
-    let _rdma = rdma_listener.accept(1, 1, 512).await?;
+fn handle_client(stream: TcpStream) -> io::Result<()> {
+    let reader = io::BufReader::new(stream);
 
+    for line in reader.lines() {
+        let line = line?;
+        println!("Received: {}", line);
+    }
     Ok(())
 }
 
-fn main() {
-    let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
-    server(addr);
-    println!("Hello, world!");
+fn main() -> io::Result<()> {
+    let listener = TcpListener::bind("192.168.100.51:0")?;
+    let local_addr = listener.local_addr()?;
+    println!("Server listening on {}", local_addr);
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(stream) => {
+                handle_client(stream)?;
+            }
+            Err(e) => {
+                eprintln!("Connection failed: {}", e);
+            }
+        }
+    }
+
+    Ok(())
 }
