@@ -13,8 +13,7 @@ fn handle_client(stream: TcpStream) -> io::Result<()> {
 }
 
 fn main() -> io::Result<()> {
-    let address = SocketAddrV4::new(Ipv4Addr::new(192, 168, 0, 51), pick_unused_port().unwrap());
-    let listener = TcpListener::bind(address)?;
+    let listener = TcpListener::bind("192.168.100.51:0")?;
     let local_addr = listener.local_addr()?;
     println!("Server listening on {}", local_addr);
 
