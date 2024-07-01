@@ -185,7 +185,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            client_tcp();
+            let _ = client_tcp();
             break;
         } else {
             println!("Protocol: {:?} does not exists!", protocol);
