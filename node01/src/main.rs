@@ -81,7 +81,7 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     Ok(records)
 }
 
-async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Result<()> {
+async fn client(addr: Option<SocketAddrV4>, protocol: &str, rdma_type: Option<&str>) -> io::Result<()> {
     if protocol == "rdma" {
 
         let rdma = Rdma::connect(addr, 1, 1, 512).await?;
@@ -112,7 +112,7 @@ async fn client(addr: SocketAddrV4, protocol: &str, rdma_type: &str) -> io::Resu
     } else {
         let mut stream = TcpStream::connect("192.168.100.52:0")?;
         let remote_end_address = stream.local_addr()?;
-        println!("Server connected to {}", remode_end_adress);
+        println!("Server connected to {}", remote_end_adress);
 
         let file = File::open("src/data/test_data.csv")?;  //? try reading file
         let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
@@ -184,7 +184,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            client(null, protocol, null);
+            client(None, protocol, None);
             break;
         } else {
             println!("Protocol: {:?} does not exists!", protocol);
