@@ -117,9 +117,9 @@ fn client_tcp() -> io::Result<()> {
     println!("Server connected to {}", remote_end_address);
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+    let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
-    for line in contant.records() {
+    for line in content.records() {
         let record = line?;
         let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
             
@@ -185,7 +185,9 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            let _ = client_tcp();
+            if let Err(e) = client_tcp() {
+                eprintln!("Error occurred: {}", e);
+            }
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
