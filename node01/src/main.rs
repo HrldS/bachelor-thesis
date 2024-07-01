@@ -81,49 +81,50 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     Ok(records)
 }
 
-async fn client(addr: Option<SocketAddrV4>, protocol: &str, rdma_type: Option<&str>) -> io::Result<()> {
-    if protocol == "rdma" {
+async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
+    let rdma = Rdma::connect(addr, 1, 1, 512).await?;
 
-        let rdma = Rdma::connect(addr, 1, 1, 512).await?;
+    let file = File::open("src/data/test_data.csv")?;  //? try reading file
+    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
-        let file = File::open("src/data/test_data.csv")?;  //? try reading file
-        let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+    for line in contant.records() {
+        let line = line?;
 
-        for line in contant.records() {
-            let line = line?;
+        if rdma_type == "write" {
+            let layout = Layout::for_value(&line);
 
-            if rdma_type == "write" {
-                let layout = Layout::for_value(&line);
-
-                let mut lmr = rdma.alloc_local_mr(layout)?;
-                let mut rmr = rdma.request_remote_mr(layout).await?;
+            let mut lmr = rdma.alloc_local_mr(layout)?;
+            let mut rmr = rdma.request_remote_mr(layout).await?;
                 
-                println!("Debug Client: {:?}", line);
-                println!();
+            println!("Debug Client: {:?}", line);
+            println!();
 
-                let _num = lmr.as_mut_slice().write_csv_record(&line)?;
-                rdma.write(&lmr, &mut rmr).await?;
+            let _num = lmr.as_mut_slice().write_csv_record(&line)?;
+            rdma.write(&lmr, &mut rmr).await?;
 
-                rdma.send_remote_mr(rmr).await?;
-            } else {
-                println!("not write");
-            }
+            rdma.send_remote_mr(rmr).await?;
+        } else {
+            println!("not write");
         }
-    } else {
-        let mut stream = TcpStream::connect("192.168.100.52:0")?;
-        let remote_end_address = stream.local_addr()?;
-        println!("Server connected to {}", remote_end_adress);
+    }
+    
+    Ok(())
+}
 
-        let file = File::open("src/data/test_data.csv")?;  //? try reading file
-        let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+async fn client_tcp() -> io:Result<()> {
+    let mut stream = TcpStream::connect("192.168.100.52:0")?;
+    let remote_end_address = stream.local_addr()?;
+    println!("Server connected to {}", remote_end_adress);
 
-        for line in contant.records() {
-            let record = line?;
-            let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
+    let file = File::open("src/data/test_data.csv")?;  //? try reading file
+    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+
+    for line in contant.records() {
+        let record = line?;
+        let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
             
-            // Write the record to the TCP stream
-            stream.write_all(record_string.as_bytes())?;
-        }
+        // Write the record to the TCP stream
+        stream.write_all(record_string.as_bytes())?;
     }
     Ok(())
 }
@@ -173,7 +174,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
                     std::thread::spawn(move || server(addr));
                     tokio::time::sleep(Duration::from_secs(3)).await;
-                    client(addr, protocol, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
+                    client(addr, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
                     break;
                 } else if rdma_type == "atomic" {
                     println!("{:?}", rdma_type);
@@ -184,7 +185,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            client(None, protocol, None);
+            client_tcp();
             break;
         } else {
             println!("Protocol: {:?} does not exists!", protocol);
