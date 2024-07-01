@@ -21,7 +21,7 @@ fn main() -> io::Result<()> {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-               std::thread::spawn(||handle_client(stream)?);
+               std::thread::spawn(||handle_client(stream));
             }
             Err(e) => {
                 eprintln!("Connection failed: {}", e);
