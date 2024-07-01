@@ -180,7 +180,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     println!("{:?}", rdma_type);
                     break;
                 } else {
-                    println!("Transmission type:{:?} does not exists!", rdma_type);
+                    println!("Transmission type:{:?} does not exist!", rdma_type);
                 }
             }
             break;
@@ -188,7 +188,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             let _ = client_tcp();
             break;
         } else {
-            println!("Protocol: {:?} does not exists!", protocol);
+            println!("Protocol: {:?} does not exist!", protocol);
         }
     }
     Ok(())
