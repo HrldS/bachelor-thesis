@@ -114,7 +114,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 async fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:0")?;
     let remote_end_address = stream.local_addr()?;
-    println!("Server connected to {}", remote_end_adress);
+    println!("Server connected to {}", remote_end_address);
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
