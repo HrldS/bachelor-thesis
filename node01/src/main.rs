@@ -8,7 +8,7 @@ use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
     io::{self, Write, Error as IOError, ErrorKind},
-    net::{Ipv4Addr, SocketAddrV4},
+    net::{TcpListener, TcpStream, Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
 
