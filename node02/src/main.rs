@@ -1,7 +1,5 @@
 use std::io::{self, BufRead};
 use std::net::{TcpListener, TcpStream};
-use std::thread;
-
 
 fn handle_client(stream: TcpStream) -> io::Result<()> {
     let reader = io::BufReader::new(stream);
@@ -14,7 +12,8 @@ fn handle_client(stream: TcpStream) -> io::Result<()> {
 }
 
 fn main() -> io::Result<()> {
-    let listener = TcpListener::bind("192.168.100.51:0")?;
+    let address = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap())
+    let listener = TcpListener::bind(address)?;
     let local_addr = listener.local_addr()?;
     println!("Server listening on {}", local_addr);
 
