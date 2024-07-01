@@ -174,7 +174,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     let addr = SocketAddrV4::new(Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
                     std::thread::spawn(move || server(addr));
                     tokio::time::sleep(Duration::from_secs(3)).await;
-                    client(addr, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
+                    client_rdma(addr, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
                     break;
                 } else if rdma_type == "atomic" {
                     println!("{:?}", rdma_type);
