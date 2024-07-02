@@ -13,7 +13,7 @@ fn handle_client(stream: TcpStream) -> io::Result<()> {
 }
 
 fn main() -> io::Result<()> {
-    let listener = TcpListener::bind("192.168.100.52:0")?;
+    let listener = TcpListener::bind("192.168.100.52:41000")?;
     let local_addr = listener.local_addr()?;
     println!("Server listening on {}", local_addr);
 
