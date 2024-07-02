@@ -185,7 +185,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            let handle = thread::spawn(move || {
+            let handle = std::thread::spawn(move || {
                 if let Err(e) = client_tcp() {
                     eprintln!("Error occurred: {}", e);
                 }
