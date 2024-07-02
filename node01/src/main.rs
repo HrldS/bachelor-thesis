@@ -185,11 +185,11 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            if let Err(e) = client_tcp() {
-                eprintln!("Error occurred: {}", e);
-            } else {
-                std::thread::spawn(move || client_tcp());
-            }
+            let handle = thread::spawn(move || {
+                if let Err(e) = client_tcp() {
+                    eprintln!("Error occurred: {}", e);
+                }
+            });
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
