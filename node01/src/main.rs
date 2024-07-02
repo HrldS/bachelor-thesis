@@ -8,7 +8,7 @@ use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
     io::{self, Write, Error as IOError, ErrorKind},
-    net::{TcpListener, TcpStream, Ipv4Addr, SocketAddrV4},
+    net::{TcpStream, Ipv4Addr, SocketAddrV4}, //TcpListener,
     time::Duration 
 };
 
@@ -185,7 +185,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            let handle = std::thread::spawn(move || {
+            let _handle = std::thread::spawn(move || {
                 if let Err(e) = client_tcp() {
                     eprintln!("Error occurred: {}", e);
                 }
