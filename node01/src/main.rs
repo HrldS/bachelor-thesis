@@ -111,7 +111,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-async fn client_tcp() -> io::Result<()> {
+fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000");
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -123,9 +123,9 @@ async fn client_tcp() -> io::Result<()> {
         let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
         //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
-        stream?.write_all(record_string.as_bytes());
+        stream.write_all(record_string.as_bytes());
         //println!("Debug: Something was flushed");
-        stream?.flush()?;
+        stream.flush()?;
        // println!("Debug: Something was written");
         //println!("");
     }
@@ -189,7 +189,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             break;
         } else if protocol == "tcp" {
             tokio::spawn(async {
-                client_tcp().await;
+                client_tcp();
             });
             break;
         } else {
