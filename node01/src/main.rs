@@ -188,7 +188,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            tokio::spawn({
+            tokio::spawn(async {
                 client_tcp().await;
             });
             break;
