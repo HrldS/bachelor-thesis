@@ -117,11 +117,14 @@ fn client_tcp() -> io::Result<()> {
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
     let mut record_string = String::new();
+    let iterator = 0;
 
     for line in content.records() {
+        println!("Debug: runde {}", iterator);
+        iterator++;
         let record = line?;
         let concat_record = record.iter().collect::<Vec<&str>>().join(";") + "\n";
-        println!("Debug Recordstring: {:?}", concat_record);
+       // println!("Debug Recordstring: {:?}", concat_record);
         record_string += &concat_record;
         //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
