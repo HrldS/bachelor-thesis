@@ -118,13 +118,27 @@ fn client_tcp() -> io::Result<()> {
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     for line in content.records() {
-        let record = line?;
-        let record_string = record.iter().collect::<Vec<&str>>().join(";");
-        println!("Debug: {:?}", record_string);
-        println!("");
-        // Write the record to the TCP stream
-        stream.write_all(record_string.as_bytes())?;
-        stream.flush()?;
+        match line {
+            Ok(record) => {
+                let record_string = record.iter().collect::<Vec<&str>>().join(";");
+                println!("Debug: {:?}", record_string);
+                println!("");
+                
+                // Write the record to the TCP stream
+                if let Err(e) = stream.write_all(record_string.as_bytes()) {
+                    eprintln!("Failed to write to stream: {}", e);
+                    return Err(e);
+                }
+                if let Err(e) = stream.flush() {
+                    eprintln!("Failed to flush stream: {}", e);
+                    return Err(e);
+                }
+            },
+            Err(e) => {
+                eprintln!("Failed to read CSV record: {}", e);
+                return Err(e);
+            }
+        }
     }
     Ok(())
 }
