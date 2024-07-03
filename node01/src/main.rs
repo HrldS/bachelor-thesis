@@ -123,7 +123,7 @@ fn client_tcp() -> io::Result<()> {
         let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
         //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
-        stream.write_all(record_string.as_bytes());
+        stream.write_all(record_string.as_bytes())?;
         //println!("Debug: Something was flushed");
         stream.flush()?;
        // println!("Debug: Something was written");
@@ -188,9 +188,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            tokio::spawn(async {
                 client_tcp();
-            });
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
