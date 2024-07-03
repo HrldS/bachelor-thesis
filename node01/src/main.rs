@@ -121,11 +121,6 @@ fn client_tcp() -> io::Result<()> {
     for line in contant.records() {
         let record = line?;
 
-        if record.len() != 4 {
-            println!("Record length:{:?}",record.len());
-            return Err("Incorrect number of fields in record");
-        }
-
         let name = record[0].to_string();
         let a = record[1].to_string();
         let b = record[2].to_string();
