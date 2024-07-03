@@ -115,13 +115,33 @@ fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut content = ReaderBuilder::new().delimiter(b';').has_headers(false).from_reader(file); // Disable headers assumption to not skip first row
-    let mut record_string = String::new();
+    let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+
+    let mut records = Vec::new();
+    for line in contant.records() {
+        let record = line?;
+
+        if record.len() != 4 {
+            println!("Record length:{:?}",record.len());
+            return Err("Incorrect number of fields in record".into());
+        }
+
+        let name = record[0].to_string();
+        let a: i32 = record[1].parse()?;
+        let b: i32 = record[2].parse()?;
+        let c: i32 = record[3].parse()?;
+
+        records.push((name, a, b, c));
+        println!("Debug: {:?}",records);
+    }
+    //let file = File::open("src/data/test_data.csv")?;  //? try reading file
+    //let mut content = ReaderBuilder::new().delimiter(b';').has_headers(false).from_reader(file); // Disable headers assumption to not skip first row
+    //let mut record_string = String::new();
     //let mut iterator = 0;
 
-    for line in content.records() {
-        let record = line?;
-        println!("Debug: {:?}", record);
+   // for line in content.records() {
+      //  let record = line?;
+     //   println!("Debug: {:?}", record);
         //println!("Debug: runde {}", iterator);
         //iterator += 1;
         //let record = line?;
@@ -131,7 +151,6 @@ fn client_tcp() -> io::Result<()> {
         //record_string += &concat_record;
         //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
-    }
     stream.write_all(record_string.as_bytes())?;
     println!("Debug: Something was flushed");
     stream.flush()?;
