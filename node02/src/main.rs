@@ -3,12 +3,12 @@ use std::net::{TcpListener, TcpStream}; // Ipv4Addr, SocketAddrV4
 //use portpicker::pick_unused_port;
 
 fn handle_client(stream: TcpStream) -> io::Result<()> {
-    let buffer_size = 100 * 1024 * 1024;
+    let buffer_size = 1024 * 1024 * 1024 * 1024;
     let reader = io::BufReader::with_capacity(buffer_size, stream);
 
     for line in reader.lines() {
         let line = line?;
-        println!("Received: {}", line);
+        println!("Received: {}" + "\n", line);
     }
     Ok(())
 }
