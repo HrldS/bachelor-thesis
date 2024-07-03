@@ -123,9 +123,10 @@ fn client_tcp() -> io::Result<()> {
         println!("Debug: runde {}", iterator);
         iterator += 1;
         let record = line?;
-        let concat_record = record.iter().collect::<Vec<&str>>().join(";") + "\n";
+        println!("Debug Record: {:?}", record)
+        //let concat_record = record.iter().collect::<Vec<&str>>().join(";");
        // println!("Debug Recordstring: {:?}", concat_record);
-        record_string += &concat_record;
+        //record_string += &concat_record;
         //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
     }
