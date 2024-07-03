@@ -123,7 +123,8 @@ fn client_tcp() -> io::Result<()> {
         println!("Debug: {:?}", record_string);
         println!("");
         // Write the record to the TCP stream
-        stream.write_all(record_string)?;
+        stream.write_all(record_string.as_bytes())?;
+        stream.flush()?;
     }
     Ok(())
 }
