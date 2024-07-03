@@ -115,42 +115,20 @@ fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+    let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
-    let mut records = Vec::new();
-    for line in contant.records() {
+    for line in content.records() {
         let record = line?;
-
-        let name = record[0].to_string();
-        let a = record[1].to_string();
-        let b = record[2].to_string();
-        let c = record[3].to_string();
-
-        records.push((name, a, b, c));
-        println!("Debug: {:?}",records);
-    }
-    //let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    //let mut content = ReaderBuilder::new().delimiter(b';').has_headers(false).from_reader(file); // Disable headers assumption to not skip first row
-    let mut record_string = String::new();
-    //let mut iterator = 0;
-
-   // for line in content.records() {
-      //  let record = line?;
-     //   println!("Debug: {:?}", record);
-        //println!("Debug: runde {}", iterator);
-        //iterator += 1;
-        //let record = line?;
-        //println!("Debug Record: {:?}", record)
-        //let concat_record = record.iter().collect::<Vec<&str>>().join(";");
-       // println!("Debug Recordstring: {:?}", concat_record);
-        //record_string += &concat_record;
+        //println!("Debug Recordstring: {:?}", record);
+        let record_string = record.iter().collect::<Vec<&str>>().join(";");
         //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
-    stream.write_all(record_string.as_bytes())?;
-    println!("Debug: Something was flushed");
-    stream.flush()?;
-    println!("Debug: Something was written");
-    println!("");
+        stream.write_all(record_string.as_bytes())?;
+        //println!("Debug: Something was flushed");
+        stream.flush()?;
+       // println!("Debug: Something was written");
+        //println!("");
+    }
     Ok(())
 }
 
