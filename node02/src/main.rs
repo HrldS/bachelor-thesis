@@ -8,7 +8,7 @@ fn handle_client(stream: TcpStream) -> io::Result<()> {
 
     for line in reader.lines() {
         let line = line?;
-        println!("Received: {}" + "\n", line);
+        println!("Received: {:?}\n", line);
     }
     Ok(())
 }
