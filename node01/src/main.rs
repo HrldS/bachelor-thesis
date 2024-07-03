@@ -116,19 +116,20 @@ fn client_tcp() -> io::Result<()> {
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+    let record_string;
 
     for line in content.records() {
         let record = line?;
         println!("Debug Recordstring: {:?}", record);
-        let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
+        record_string += record.iter().collect::<Vec<&str>>().join(";") + "\n";
         println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
-        stream.write_all(record_string.as_bytes())?;
-        println!("Debug: Something was written");
-        println!("");
     }
+    stream.write_all(record_string.as_bytes())?;
     println!("Debug: Something was flushed");
     stream.flush()?;
+    println!("Debug: Something was written");
+    println!("");
     Ok(())
 }
 
