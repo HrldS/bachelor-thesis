@@ -7,7 +7,7 @@ use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
 use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
-    io::{self, BufWriter, Write, Error as IOError, ErrorKind},
+    io::{self, Write, Error as IOError, ErrorKind}, //BufWriter,
     net::{TcpStream, Ipv4Addr, SocketAddrV4}, //TcpListener,
     time::Duration 
 };
@@ -112,8 +112,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 }
 
 fn client_tcp() -> io::Result<()> {
-    let stream = TcpStream::connect("192.168.100.52:41000")?;
-    let mut writer = BufWriter::new(stream);
+    let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
@@ -124,9 +123,8 @@ fn client_tcp() -> io::Result<()> {
         println!("Debug: {:?}", record_string);
         println!("");
         // Write the record to the TCP stream
-        writer.write_all(record_string.as_bytes())?;
+        stream.write_all(record_string.as_bytes())?;
     }
-    writer.flush()?;
     Ok(())
 }
 
