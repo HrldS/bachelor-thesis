@@ -125,18 +125,18 @@ fn client_tcp() -> io::Result<()> {
                 println!("");
                 
                 // Write the record to the TCP stream
-                if let Err(e) = stream.write_all(record_string.as_bytes()) {
+                if let std::io::Err(e) = stream.write_all(record_string.as_bytes()) {
                     eprintln!("Failed to write to stream: {}", e);
-                    return Err(e);
+                    return std::io::Err(e);
                 }
-                if let Err(e) = stream.flush() {
+                if let std::io::Err(e) = stream.flush() {
                     eprintln!("Failed to flush stream: {}", e);
-                    return Err(e);
+                    return std::io::Err(e);
                 }
             },
-            Err(e) => {
+            std::io::Err(e) => {
                 eprintln!("Failed to read CSV record: {}", e);
-                return Err(e);
+                return std::io::Err(e);
             }
         }
     }
