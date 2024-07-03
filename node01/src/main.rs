@@ -111,22 +111,17 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn client_tcp() -> io::Result<(), Box<dyn Error>> {
+fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = ReaderBuilder::new().delimiter(b';').has_headers(false).from_reader(file); // Disable headers assumption to not skip first row
-   // let mut record_string = String::new();
+    let mut record_string = String::new();
     //let mut iterator = 0;
 
     for line in content.records() {
-        let record = match line {
-            Ok(r) => r,
-            Err(e) => {
-                eprintln!("Error reading record: {}", e);
-                continue; // Skip this record and continue
-            }
-        };
+        let record = line?;
+        println!("Debug: {:?}", record);
         //println!("Debug: runde {}", iterator);
         //iterator += 1;
         //let record = line?;
