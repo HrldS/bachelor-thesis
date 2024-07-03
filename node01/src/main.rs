@@ -113,8 +113,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 
 fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
-    let remote_end_address = stream.local_addr()?;
-    println!("Server connected to {}", remote_end_address);
+    let mut writer = BufWriter::new(stream);
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
@@ -123,8 +122,9 @@ fn client_tcp() -> io::Result<()> {
         let record = line?;
         let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
         println!("Debug: {:?}", record_string);
+        println!("");
         // Write the record to the TCP stream
-        stream.write_all(record_string.as_bytes())?;
+        writer.write_all(record_string.as_bytes())?;
     }
     Ok(())
 }
