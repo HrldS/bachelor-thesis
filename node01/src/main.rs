@@ -46,12 +46,12 @@ impl WriteLine for [u8] {
         let mut this = self;
         let line_str = line.iter().collect::<Vec<_>>().join(";"); // Convert the line to a semicolon-separated string
 
-        println!("Debug WriteLine: {:?}", line_str);
+        println!("Debug WriteLine as String: {:?}", line_str);
         println!();
 
         let bytes = line_str.as_bytes(); // Convert the string to bytes
 
-        println!("Debug WriteLine: {:?}", bytes);
+        println!("Debug WriteLine as Bytes: {:?}", bytes);
         println!();
 
         this.write(bytes) // Write the bytes to the memory region
@@ -96,7 +96,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
             let mut lmr = rdma.alloc_local_mr(layout)?;
             let mut rmr = rdma.request_remote_mr(layout).await?;
                 
-            println!("Debug Client: {:?}", line);
+            println!("Debug: Client about to write {:?}", line);
             println!();
 
             let _num = lmr.as_mut_slice().write_csv_record(&line)?;
@@ -119,11 +119,11 @@ fn client_tcp() -> io::Result<()> {
 
     for line in content.records() {
         let record = line?;
-        let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
+        let record_string = record.iter().collect::<Vec<&str>>().join(";");
         println!("Debug: {:?}", record_string);
         println!("");
         // Write the record to the TCP stream
-        stream.write_all(record_string.as_bytes())?;
+        stream.write_all(record_string)?;
     }
     Ok(())
 }
