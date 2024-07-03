@@ -111,7 +111,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn client_tcp() -> io::Result<()> {
+async fn client_tcp() -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -188,12 +188,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            //let _handle = std::thread::spawn(|| {  //move
-               // if let Err(e) = client_tcp() {
-                  //  eprintln!("Error occurred: {}", e);
-              //  }
-              client_tcp();
-                //});
+              tokio::spawn(async {client_tcp().await;});
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
