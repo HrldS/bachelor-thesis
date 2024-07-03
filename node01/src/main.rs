@@ -124,9 +124,10 @@ fn client_tcp() -> io::Result<()> {
         println!("Debug: {:?}", record_string);
         println!("");
         // Write the record to the TCP stream
-        let bytes_written = stream.write_all(record_string.as_bytes())?;
-        println!("Bytes written to stream: {:?}", bytes_written);
+        stream.write_all(record_string.as_bytes())?;
+        println!("Debug: Something was written");
         stream.flush()?;
+        println("Debug: Something was flushed");
     }
     Ok(())
 }
