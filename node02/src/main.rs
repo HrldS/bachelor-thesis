@@ -6,8 +6,13 @@ fn handle_client(stream: TcpStream) -> io::Result<()> {
     let reader = io::BufReader::new(stream);
 
     for line in reader.lines() {
-        let line = line?;
-        println!("Received: {:?}\n", line);
+        match line {
+            Ok(line) => println!("Received: {:?}", line),
+            Err(e) => {
+                eprintln!("Error reading from client: {}", e);
+                break;
+            }
+        }
     }
     Ok(())
 }
