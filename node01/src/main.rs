@@ -119,7 +119,7 @@ fn client_tcp() -> io::Result<()> {
 
     for line in content.records() {
         let record = line?;
-        let record_string = record.iter().collect::<Vec<&str>>().join(";");
+        let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
         println!("Debug: {:?}", record_string);
         println!("");
         // Write the record to the TCP stream
