@@ -119,11 +119,18 @@ fn client_tcp() -> io::Result<()> {
     let mut record_string = String::new();
     let mut iterator = 0;
 
-    for line in content.records() {
-        println!("Debug: runde {}", iterator);
-        iterator += 1;
-        let record = line?;
-        println!("Debug Record: {:?}", record)
+    for (i, line) in content.records().enumerate() {
+        let record = match line {
+            Ok(r) => r,
+            Err(e) => {
+                eprintln!("Error reading record {}: {}", i, e);
+                continue; // Skip this record and continue
+            }
+        };
+        //println!("Debug: runde {}", iterator);
+        //iterator += 1;
+        //let record = line?;
+        //println!("Debug Record: {:?}", record)
         //let concat_record = record.iter().collect::<Vec<&str>>().join(";");
        // println!("Debug Recordstring: {:?}", concat_record);
         //record_string += &concat_record;
