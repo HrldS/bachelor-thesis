@@ -3,8 +3,7 @@ use std::net::{TcpListener, TcpStream}; // Ipv4Addr, SocketAddrV4
 //use portpicker::pick_unused_port;
 
 fn handle_client(stream: TcpStream) -> io::Result<()> {
-    let buffer_size = 1024 * 1024 * 1024 * 1024;
-    let reader = io::BufReader::with_capacity(buffer_size, stream);
+    let reader = io::BufReader::new(stream);
 
     for line in reader.lines() {
         let line = line?;
@@ -21,7 +20,7 @@ fn main() -> io::Result<()> {
     for stream in listener.incoming() {
         match stream {
             Ok(stream) => {
-               std::thread::spawn(move || handle_client(stream));
+               std::thread::spawn(|| handle_client(stream));
             }
             Err(e) => {
                 eprintln!("Connection failed: {}", e);
