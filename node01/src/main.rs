@@ -214,8 +214,8 @@ async fn main() -> Result<(), Box<dyn Error>>{
                // if let Err(e) = client_tcp() {
                   //  eprintln!("Error occurred: {}", e);
               //  }
-              client_tcp()
-            }; //)
+              client_tcp();
+                //});
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
