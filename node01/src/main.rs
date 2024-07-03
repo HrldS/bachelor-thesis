@@ -1,6 +1,6 @@
 extern crate csv;
 
-use csv::StringRecord;
+use csv::{StringRecord, ReaderBuilder};
 use std::error::Error;
 use std::fs::File;
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
@@ -60,7 +60,7 @@ impl WriteLine for [u8] {
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+    let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     let mut records = Vec::new();
     for line in contant.records() {
@@ -111,19 +111,19 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn client_tcp() -> io::Result<()> {
+fn client_tcp() -> io::Result<(), Box<dyn Error>> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
-    let mut record_string = String::new();
-    let mut iterator = 0;
+    let mut content = ReaderBuilder::new().delimiter(b';').has_headers(false).from_reader(file); // Disable headers assumption to not skip first row
+   // let mut record_string = String::new();
+    //let mut iterator = 0;
 
-    for (i, line) in content.records().enumerate() {
+    for line in content.records() {
         let record = match line {
             Ok(r) => r,
             Err(e) => {
-                eprintln!("Error reading record {}: {}", i, e);
+                eprintln!("Error reading record: {}", e);
                 continue; // Skip this record and continue
             }
         };
