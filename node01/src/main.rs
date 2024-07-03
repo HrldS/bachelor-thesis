@@ -116,7 +116,7 @@ fn client_tcp() -> io::Result<()> {
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
-    let record_string = "";
+    let mut record_string = "";
 
     for line in content.records() {
         let record = line?;
