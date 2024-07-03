@@ -127,16 +127,16 @@ fn client_tcp() -> io::Result<()> {
         }
 
         let name = record[0].to_string();
-        let a: i32 = record[1].parse()?;
-        let b: i32 = record[2].parse()?;
-        let c: i32 = record[3].parse()?;
+        let a = record[1].to_string();
+        let b = record[2].to_string();
+        let c = record[3].to_string();
 
         records.push((name, a, b, c));
         println!("Debug: {:?}",records);
     }
     //let file = File::open("src/data/test_data.csv")?;  //? try reading file
     //let mut content = ReaderBuilder::new().delimiter(b';').has_headers(false).from_reader(file); // Disable headers assumption to not skip first row
-    //let mut record_string = String::new();
+    let mut record_string = String::new();
     //let mut iterator = 0;
 
    // for line in content.records() {
