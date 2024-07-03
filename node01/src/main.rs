@@ -118,6 +118,7 @@ fn client_tcp() -> io::Result<()> {
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     for line in content.records() {
+        println!("{:?}", content);
         let record = line?;
         let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
         println!("Debug: {:?}", record_string);
