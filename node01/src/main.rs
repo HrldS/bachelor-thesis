@@ -112,7 +112,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 }
 
 fn client_tcp() -> io::Result<()> {
-    let mut stream = TcpStream::connect("192.168.100.52:41000")?;
+    let stream = TcpStream::connect("192.168.100.52:41000")?;
     let mut writer = BufWriter::new(&stream);
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
