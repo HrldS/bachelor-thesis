@@ -120,10 +120,10 @@ fn client_tcp() -> io::Result<()> {
 
     for line in content.records() {
         let record = line?;
-        println!("Debug Recordstring: {:?}", record);
         let concat_record = record.iter().collect::<Vec<&str>>().join(";") + "\n";
+        println!("Debug Recordstring: {:?}", concat_record);
         record_string += &concat_record;
-        println!("Debug String: {:?}", record_string);
+        //println!("Debug String: {:?}", record_string);
         // Write the record to the TCP stream
     }
     stream.write_all(record_string.as_bytes())?;
