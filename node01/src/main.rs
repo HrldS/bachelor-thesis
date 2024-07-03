@@ -126,6 +126,7 @@ fn client_tcp() -> io::Result<()> {
         // Write the record to the TCP stream
         writer.write_all(record_string.as_bytes())?;
     }
+    writer.flush()?;
     Ok(())
 }
 
