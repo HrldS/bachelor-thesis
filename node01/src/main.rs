@@ -11,6 +11,7 @@ use std::{
     net::{TcpListener, TcpStream, Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
+use serde::{Serialize, Deserialize};
 
 trait WriteLine {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize>;
@@ -24,16 +25,29 @@ trait VecOfStringrecordsToBytes {
     fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>>;
 }
 
+impl Serialize for StringRecord {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.as_slice().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for StringRecord {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let vec: Vec<String> = Vec::deserialize(deserializer)?;
+        Ok(StringRecord::from(vec))
+    }
+}
+
 impl VecOfStringrecordsToBytes for Vec<StringRecord> {
     fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>> {
-        let mut wtr = csv::WriterBuilder::new().has_headers(false).from_writer(vec![]);
-        
-        for record in self {
-            wtr.write_record(record)?;
-        }
-
-        let data = wtr.into_inner()?;
-        Ok(data)
+        let serialized = bincode::serialize(self)?;
+        Ok(serialized)
     }
 }
 
@@ -243,8 +257,8 @@ fn client_tcp(size: &str) -> io::Result<()> {
     let data = data_formating(size);
 
     for line in data {
-        let message = line;
-        stream.write_all(message.vec_of_stringrecords_to_bytes())?;
+        let message = linevec_of_stringrecords_to_bytes()?;
+        stream.write_all(message)?;
         stream.flush()?;
     }
     Ok(())
