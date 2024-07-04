@@ -25,6 +25,18 @@ trait VecOfStringrecordsToBytes {
     fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>>;
 }
 
+impl From<StringRecord> for MyStringRecord {
+    fn from(record: StringRecord) -> Self {
+        MyStringRecord(record.into_iter().map(String::from).collect())
+    }
+}
+
+impl Into<StringRecord> for MyStringRecord {
+    fn into(self) -> StringRecord {
+        StringRecord::from(self.0)
+    }
+}
+
 impl Serialize for StringRecord {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -46,7 +58,8 @@ impl<'de> Deserialize<'de> for StringRecord {
 
 impl VecOfStringrecordsToBytes for Vec<StringRecord> {
     fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>> {
-        let serialized = bincode::serialize(self)?;
+        let wrapped: Vec<MyStringRecord> = self.iter().map(|record| MyStringRecord::from(record.clone())).collect();
+        let serialized = bincode::serialize(&wrapped)?;
         Ok(serialized)
     }
 }
