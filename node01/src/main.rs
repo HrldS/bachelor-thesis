@@ -114,7 +114,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
-    println!("size");
+    println!("Size: {:?}", size);
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
@@ -161,6 +161,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>>{
     loop {
+        let mut size_selected = String::new();
         let mut input = String::new();
         println!("Hallo! This programm tests the latency and bandwidth of the TCP and RDMA transport protocol by sending the content of a csv file to a server for processing.");
         println!("Afterwards the server sends the processed data back to you.");
@@ -211,10 +212,10 @@ async fn main() -> Result<(), Box<dyn Error>>{
             println!("6: entire file at once");
 
             let mut size = String::new();
-            io::stdin().read_line(&mut input).expect("failed to read");
-            let size = size.trim();
+            io::stdin().read_line(&mut size).expect("failed to read");
+            size_selected = size.trim();
 
-            let client_thread = std::thread::spawn(move || client_tcp(&size));   //spawn worker thread to handle the tcp client
+            let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
 
             let listener = TcpListener::bind("192.168.100.51:40999")?;
             let local_addr = listener.local_addr()?;
