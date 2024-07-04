@@ -119,15 +119,9 @@ fn client_tcp() -> io::Result<()> {
 
     for line in content.records() {
         let record = line?;
-        //println!("Debug Recordstring: {:?}", record);
         let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
-        //println!("Debug String: {:?}", record_string);
-        // Write the record to the TCP stream
         stream.write_all(record_string.as_bytes())?;
-        //println!("Debug: Something was flushed");
         stream.flush()?;
-       // println!("Debug: Something was written");
-        //println!("");
     }
     Ok(())
 }
@@ -188,7 +182,8 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-                client_tcp();
+            let client_thread = std::thread::spawn(move || client_tcp());   //spawn worker thread to handle the tcp client
+            client_thread.join().unwrap();  //wait for the worker thread to finish his work
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
