@@ -20,6 +20,35 @@ trait ReadLine {
     fn read_line(&self) -> io::Result<StringRecord>;
 }
 
+trait ToBytes {
+    fn to_bytes(&self) -> Vec<u8>;
+}
+
+impl ToBytes for Vec<Vec<(String, i32, i32, i32)>> {
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut bytes = Vec::new();
+
+        // Iterate over each row in the 2D vector
+        for row in self {
+            // Iterate over each tuple in the current row
+            for &(ref s, i1, i2, i3) in row {
+                // Convert the string to bytes
+                let s_bytes = s.as_bytes();
+                // Convert the length of the string to u64 in little-endian bytes
+                let len_bytes = (s_bytes.len() as u64).to_le_bytes();
+                // Extend the bytes vector with length bytes and string bytes
+                bytes.extend_from_slice(&len_bytes);
+                bytes.extend_from_slice(s_bytes);
+                // Convert each i32 to little-endian bytes and extend the bytes vector
+                bytes.extend_from_slice(&i1.to_le_bytes());
+                bytes.extend_from_slice(&i2.to_le_bytes());
+                bytes.extend_from_slice(&i3.to_le_bytes());
+            }
+        }
+        bytes
+    }
+}
+
 impl ReadLine for [u8] {
     fn read_line(&self) -> io::Result<StringRecord> {
         // Convert bytes back to a string
@@ -58,18 +87,14 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>> {
+fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     let mut records = Vec::new();
+
     for line in contant.records() {
         let record = line?;
-
-        if record.len() != 4 {
-            println!("Record length:{:?}",record.len());
-            return Err("Incorrect number of fields in record".into());
-        }
 
         let name = record[0].to_string();
         let a: i32 = record[1].parse()?;
@@ -78,7 +103,100 @@ fn data_formating(size: &str) -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Er
 
         records.push((name, a, b, c));
     }
-    Ok(records)
+
+    let mut result: Vec<Vec<(String, i32, i32, i32)>> = Vec::new();
+
+    match size {
+        1 => {
+            let inner_size = records.len();
+
+            for _ in 0..inner_size {  // fill the vec with 5000 vecs
+                result.push(Vec::new());
+            }
+
+            for (index, line) in records.iter().enumerate() {
+                result[index].push(line.clone()); `
+            }
+        },
+        2 => {
+            let outer_size = 10;
+            let inner_size = 500;
+
+            for _ in 0..outer_size {
+                let mut inner_vec = Vec::new();
+                inner_vec.reserve(inner_size); 
+                result.push(inner_vec);
+            }
+
+            let mut index = 0;
+            for i in 0..outer_size {
+                for j in 0..inner_size {
+                    result[i].push(records[index].clone());
+                    index += 1;
+                }
+            }
+        },
+        3 => {
+            let outer_size = 5;
+            let inner_size = 1000;
+
+            for _ in 0..outer_size {
+                let mut inner_vec = Vec::new();
+                inner_vec.reserve(inner_size); 
+                result.push(inner_vec);
+            }
+
+            let mut index = 0;
+            for i in 0..outer_size {
+                for j in 0..inner_size {
+                    result[i].push(records[index].clone());
+                    index += 1;
+                }
+            }
+        },
+        4 => {
+            let outer_size = 4;
+            let inner_size = 1250;
+
+            for _ in 0..outer_size {
+                let mut inner_vec = Vec::new();
+                inner_vec.reserve(inner_size); 
+                result.push(inner_vec);
+            }
+    
+            let mut index = 0;
+            for i in 0..outer_size {
+                for j in 0..inner_size {
+                    result[i].push(records[index].clone());
+                    index += 1;
+                }
+            }
+        },
+        5 => {
+            let outer_size = 2;
+            let inner_size = 2500;
+    
+            for _ in 0..outer_size {
+                let mut inner_vec = Vec::new();
+                inner_vec.reserve(inner_size); 
+                result.push(inner_vec);
+            }
+    
+            let mut index = 0;
+            for i in 0..outer_size {
+                for j in 0..inner_size {
+                    result[i].push(records[index].clone());
+                    index += 1;
+                }
+            }
+        },
+        6 => {
+            if let Some(line) = records.first() { //fill the vec with 1 single vec containing all records
+                result.push(vec![line.clone()]); 
+            }
+        }
+    }
+    Ok(result);
 }
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
@@ -137,11 +255,13 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
-    let content = data_formating(&size);
+    let size: i32 = size.parse()?;
 
-    for line in content {
-        let data = line;
-        stream.write_all(data.as_bytes())?;
+    let data = data_formating(size).to_2_dim_vec_to_bytes();
+
+    for line in data {
+        let message = line;
+        stream.write_all(message.as_bytes())?;
         stream.flush()?;
     }
     Ok(())
