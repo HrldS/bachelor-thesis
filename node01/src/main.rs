@@ -58,6 +58,29 @@ impl WriteLine for [u8] {
     }
 }
 
+fn data_formating(size: &str) -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>> {
+    let file = File::open("src/data/test_data.csv")?;  //? try reading file
+    let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+
+    let mut records = Vec::new();
+    for line in contant.records() {
+        let record = line?;
+
+        if record.len() != 4 {
+            println!("Record length:{:?}",record.len());
+            return Err("Incorrect number of fields in record".into());
+        }
+
+        let name = record[0].to_string();
+        let a: i32 = record[1].parse()?;
+        let b: i32 = record[2].parse()?;
+        let c: i32 = record[3].parse()?;
+
+        records.push((name, a, b, c));
+    }
+    Ok(records)
+}
+
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
@@ -114,15 +137,11 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
-    println!("Size: {:?}", size);
+    let content = data_formating(&size)?;
 
-    let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
-
-    for line in content.records() {
-        let record = line?;
-        let record_string = record.iter().collect::<Vec<&str>>().join(";") + "\n";
-        stream.write_all(record_string.as_bytes())?;
+    for line in content {
+        let data = line?
+        stream.write_all(data.as_bytes())?;
         stream.flush()?;
     }
     Ok(())
