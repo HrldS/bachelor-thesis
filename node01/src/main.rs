@@ -58,7 +58,7 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
     let reset_string = String::new();
@@ -68,8 +68,8 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
         "1" => {
             for line in reader.records() {
                 let record = line?;
-                let bytes = record.iter().collect::<Vec<_>>().join(";").as_bytes();
-                result.push(bytes);
+                let string = record.iter().collect::<Vec<_>>().join(";");
+                result.push(string);
             }
         },
         "2" => {
@@ -82,8 +82,8 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
                     temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.as_bytes();
-                    result.push(string_as_bytes);
+                    result.push(temp);
+                    temp = reset_string;
                     index = 0;
                 }
             }
@@ -98,8 +98,8 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
                     temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.as_bytes();
-                    result.push(string_as_bytes);
+                    result.push(temp);
+                    temp = reset_string;
                     index = 0;
                 }
             }
@@ -114,8 +114,8 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
                     temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.as_bytes();
-                    result.push(string_as_bytes);
+                    result.push(temp);
+                    temp = reset_string;
                     index = 0;
                 }
             }
@@ -130,8 +130,8 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
                     temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.as_bytes();
-                    result.push(string_as_bytes);
+                    result.push(temp);
+                    temp = reset_string;
                     index = 0;
                 }
             }
@@ -146,8 +146,8 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
                     temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.as_bytes();
-                    result.push(string_as_bytes);
+                    result.push(temp);
+                    temp = reset_string;
                     index = 0;
                 }
             }
@@ -219,7 +219,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
 
     for line in data {
         let message = line;
-        stream.write_all(message.as_slice())?;
+        stream.write_all(message.as_bytes())?;
         stream.flush()?;
     }
     Ok(())
