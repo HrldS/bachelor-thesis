@@ -20,11 +20,11 @@ trait ReadLine {
     fn read_line(&self) -> io::Result<StringRecord>;
 }
 
-trait vec_of_stringrecords_to_bytes {
+trait VecOfStringrecordsToBytes {
     fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>>;
 }
 
-impl vec_of_stringrecords_to_bytes for Vec<StringRecord> {
+impl VecOfStringrecordsToBytes for Vec<StringRecord> {
     fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>> {
         let mut wtr = csv::WriterBuilder::new().has_headers(false).from_writer(vec![]);
         
@@ -75,7 +75,7 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<Vec<StringRecord>>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
 
@@ -244,7 +244,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
 
     for line in data {
         let message = line;
-        stream.write_all(message.vec_of_stringrecords_to_bytes())?;
+        stream.write_all(message.VecOfStringrecordsToBytes())?;
         stream.flush()?;
     }
     Ok(())
