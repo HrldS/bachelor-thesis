@@ -83,7 +83,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index += 1;
                 } else {
                     result.push(temp);
-                    temp = reset_string;
+                    temp = reset_string.clone();
                     index = 0;
                 }
             }
@@ -99,7 +99,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index += 1;
                 } else {
                     result.push(temp);
-                    temp = reset_string;
+                    temp = reset_string.clone();
                     index = 0;
                 }
             }
@@ -115,7 +115,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index += 1;
                 } else {
                     result.push(temp);
-                    temp = reset_string;
+                    temp = reset_string.clone();
                     index = 0;
                 }
             }
@@ -131,7 +131,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index += 1;
                 } else {
                     result.push(temp);
-                    temp = reset_string;
+                    temp = reset_string.clone();
                     index = 0;
                 }
             }
@@ -147,7 +147,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index += 1;
                 } else {
                     result.push(temp);
-                    temp = reset_string;
+                    temp = reset_string.clone();
                     index = 0;
                 }
             }
