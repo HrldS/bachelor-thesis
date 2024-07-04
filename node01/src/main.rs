@@ -87,7 +87,7 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<Vec<(String, i32, i32, i32)>>> {
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
@@ -194,6 +194,9 @@ fn data_formating(size: &str) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<d
             if let Some(line) = records.first() { //fill the vec with 1 single vec containing all records
                 result.push(vec![line.clone()]); 
             }
+        },
+        _ => {
+
         }
     }
     Ok(result)
