@@ -20,11 +20,11 @@ trait ReadLine {
     fn read_line(&self) -> io::Result<StringRecord>;
 }
 
-trait ToBytes {
+trait to_2_dim_vec_to_bytes {
     fn to_bytes(&self) -> Vec<u8>;
 }
 
-impl ToBytes for Vec<Vec<(String, i32, i32, i32)>> {
+impl to_2_dim_vec_to_bytes for Vec<Vec<(String, i32, i32, i32)>> {
     fn to_bytes(&self) -> Vec<u8> {
         let mut bytes = Vec::new();
 
@@ -45,7 +45,7 @@ impl ToBytes for Vec<Vec<(String, i32, i32, i32)>> {
                 bytes.extend_from_slice(&i3.to_le_bytes());
             }
         }
-        Ok(bytes)
+        bytes
     }
 }
 
@@ -255,7 +255,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
-    let size: i32 = size.parse()?;
+    let size: i32 = size.parse();
 
     let data = data_formating(size).to_2_dim_vec_to_bytes();
 
