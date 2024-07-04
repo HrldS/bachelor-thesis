@@ -217,8 +217,8 @@ fn client_tcp(size: &str) -> io::Result<()> {
 
     let data = data_formating(size);
 
-    for line in data {
-        let message = line.as_str();
+    for line in &data {
+        let message = line.as_bytes();
         stream.write_all(message.as_bytes())?;
         stream.flush()?;
     }
