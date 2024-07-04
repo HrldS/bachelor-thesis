@@ -58,7 +58,7 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<String>> {
+fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
     let reset_string = String::new();
