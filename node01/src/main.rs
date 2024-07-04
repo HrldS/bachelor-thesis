@@ -58,11 +58,11 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<[u8]>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
-
-    let mut result: Vec<[u8]> = Vec::new();
+    let reset_string = String::new();
+    let mut result: Vec<u8> = Vec::new();
 
     match size {
         "1" => {
@@ -219,7 +219,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
 
     for line in data {
         let message = line;
-        stream.write_all(&message)?;
+        stream.write_all(message.as_slice())?;
         stream.flush()?;
     }
     Ok(())
