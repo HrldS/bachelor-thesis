@@ -45,7 +45,7 @@ impl ToBytes for Vec<Vec<(String, i32, i32, i32)>> {
                 bytes.extend_from_slice(&i3.to_le_bytes());
             }
         }
-        bytes
+        Ok(bytes)
     }
 }
 
@@ -115,7 +115,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
             }
 
             for (index, line) in records.iter().enumerate() {
-                result[index].push(line.clone()); `
+                result[index].push(line.clone()); 
             }
         },
         2 => {
@@ -196,7 +196,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
             }
         }
     }
-    Ok(result);
+    Ok(result)
 }
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
