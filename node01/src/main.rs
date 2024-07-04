@@ -126,6 +126,21 @@ fn client_tcp() -> io::Result<()> {
     Ok(())
 }
 
+fn handle_tcp_client(stream: TcpStream) -> io::Result<()> {
+    let reader = io::BufReader::new(stream);
+
+    for line in reader.lines() {
+        match line {
+            Ok(line) => println!("Received: {:?}", line),
+            Err(e) => {
+                eprintln!("Error reading from client: {}", e);
+                break;
+            }
+        }
+    }
+    Ok(())
+}
+
 #[tokio::main]
 async fn server(addr: SocketAddrV4) -> io::Result<()> {
     let rdma_listener = RdmaListener::bind(addr).await?;
@@ -182,12 +197,32 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
+            println!("Please select ");
             let client_thread = std::thread::spawn(move || client_tcp());   //spawn worker thread to handle the tcp client
+
+            let listener = TcpListener::bind("192.168.100.51:40999")?;
+            let local_addr = listener.local_addr()?;
+
+            println!("Server listening on {}", local_addr);
+            
+            for stream in listener.incoming() {
+                match stream {
+                    Ok(stream) => {
+                       std::thread::spawn(|| handle_tcp_client(stream));
+                    }
+                    Err(e) => {
+                        eprintln!("Connection failed: {}", e);
+                    }
+                }
+            }
+
+            }
             client_thread.join().unwrap();  //wait for the worker thread to finish his work
+            println!("Worker has finished");
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
         }
-    }
     Ok(())
 }
+
