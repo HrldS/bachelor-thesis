@@ -212,10 +212,15 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn client_tcp(size: &str) -> io::Result<(), std::io::Error> {
+fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
 
-    let data = data_formating(size)?;
+    let data = match data_formating(size) {
+        Ok(d) => d,
+        Err(err) => {
+            return Err(io::Error::new(io::ErrorKind::Other, err));
+        }
+    };
 
     for line in data {
         let message = line.as_bytes();
