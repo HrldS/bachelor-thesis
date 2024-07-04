@@ -21,11 +21,11 @@ trait ReadLine {
 }
 
 trait VecOfStringrecordsToBytes {
-    fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>>;
+    fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>>;
 }
 
 impl VecOfStringrecordsToBytes for Vec<StringRecord> {
-    fn to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>> {
+    fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>> {
         let mut wtr = csv::WriterBuilder::new().has_headers(false).from_writer(vec![]);
         
         for record in self {
@@ -112,7 +112,7 @@ fn data_formating(size: &str) -> Result<Vec<Vec<StringRecord>>, Box<dyn Error>> 
 
             let mut index = 0;
             for i in 0..outer_size {
-                for j in 0..inner_size {
+                for _j in 0..inner_size {
                     result[i].push(records[index].clone());
                     index += 1;
                 }
@@ -130,7 +130,7 @@ fn data_formating(size: &str) -> Result<Vec<Vec<StringRecord>>, Box<dyn Error>> 
 
             let mut index = 0;
             for i in 0..outer_size {
-                for j in 0..inner_size {
+                for _j in 0..inner_size {
                     result[i].push(records[index].clone());
                     index += 1;
                 }
@@ -148,7 +148,7 @@ fn data_formating(size: &str) -> Result<Vec<Vec<StringRecord>>, Box<dyn Error>> 
     
             let mut index = 0;
             for i in 0..outer_size {
-                for j in 0..inner_size {
+                for _j in 0..inner_size {
                     result[i].push(records[index].clone());
                     index += 1;
                 }
@@ -166,7 +166,7 @@ fn data_formating(size: &str) -> Result<Vec<Vec<StringRecord>>, Box<dyn Error>> 
     
             let mut index = 0;
             for i in 0..outer_size {
-                for j in 0..inner_size {
+                for _j in 0..inner_size {
                     result[i].push(records[index].clone());
                     index += 1;
                 }
@@ -244,7 +244,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
 
     for line in data {
         let message = line;
-        stream.write_all(message.VecOfStringrecordsToBytes())?;
+        stream.write_all(message.vec_of_stringrecords_to_bytes())?;
         stream.flush()?;
     }
     Ok(())
