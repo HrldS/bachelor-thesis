@@ -11,7 +11,6 @@ use std::{
     net::{TcpListener, TcpStream, Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
-use serde::{Serialize, Deserialize};
 
 trait WriteLine {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize>;
@@ -19,49 +18,6 @@ trait WriteLine {
 
 trait ReadLine {
     fn read_line(&self) -> io::Result<StringRecord>;
-}
-
-trait VecOfStringrecordsToBytes {
-    fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>>;
-}
-
-impl From<StringRecord> for MyStringRecord {
-    fn from(record: StringRecord) -> Self {
-        MyStringRecord(record.into_iter().map(String::from).collect())
-    }
-}
-
-impl Into<StringRecord> for MyStringRecord {
-    fn into(self) -> StringRecord {
-        StringRecord::from(self.0)
-    }
-}
-
-impl Serialize for StringRecord {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        self.as_slice().serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for StringRecord {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let vec: Vec<String> = Vec::deserialize(deserializer)?;
-        Ok(StringRecord::from(vec))
-    }
-}
-
-impl VecOfStringrecordsToBytes for Vec<StringRecord> {
-    fn vec_of_stringrecords_to_bytes(&self) -> Result<Vec<u8>, Box<dyn Error>> {
-        let wrapped: Vec<MyStringRecord> = self.iter().map(|record| MyStringRecord::from(record.clone())).collect();
-        let serialized = bincode::serialize(&wrapped)?;
-        Ok(serialized)
-    }
 }
 
 impl ReadLine for [u8] {
@@ -102,106 +58,98 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<Vec<StringRecord>>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
 
-    let mut records: Vec<StringRecord> = Vec::new();
-
-    for line in reader.records() {
-        let record = line?;
-        records.push(record);
-    }
-
-    let mut result: Vec<Vec<StringRecord>> = Vec::new();
+    let mut result: Vec<u8> = Vec::new();
 
     match size {
         "1" => {
-            let inner_size = records.len();
-
-            for _ in 0..inner_size {  // fill the vec with 5000 vecs
-                result.push(Vec::new());
-            }
-
-            for (index, line) in records.iter().enumerate() {
-                result[index].push(line.clone()); 
+            for line in reader.records() {
+                let record = line?;
+                let bytes = record.iter().collect::<Vec<_>>().join(";").as_bytes();
+                result.push(bytes);
             }
         },
         "2" => {
-            let outer_size = 10;
-            let inner_size = 500;
-
-            for _ in 0..outer_size {
-                let mut inner_vec = Vec::new();
-                inner_vec.reserve(inner_size); 
-                result.push(inner_vec);
-            }
-
-            let mut index = 0;
-            for i in 0..outer_size {
-                for _j in 0..inner_size {
-                    result[i].push(records[index].clone());
+            let index = 0;
+            for line in reader.records() {
+                let temp = String::new();
+                if(index < 500) {
+                    let record = line?;
+                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    temp = temp + string;
                     index += 1;
+                } else {
+                    let string_as_bytes = temp.to_bytes();
+                    result.push(string_as_bytes);
+                    index = 0;
                 }
             }
         },
         "3" => {
-            let outer_size = 5;
-            let inner_size = 1000;
-
-            for _ in 0..outer_size {
-                let mut inner_vec = Vec::new();
-                inner_vec.reserve(inner_size); 
-                result.push(inner_vec);
-            }
-
-            let mut index = 0;
-            for i in 0..outer_size {
-                for _j in 0..inner_size {
-                    result[i].push(records[index].clone());
+            let index = 0;
+            for line in reader.records() {
+                let temp = String::new();
+                if(index < 1000) {
+                    let record = line?;
+                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    temp = temp + string;
                     index += 1;
+                } else {
+                    let string_as_bytes = temp.to_bytes();
+                    result.push(string_as_bytes);
+                    index = 0;
                 }
             }
         },
         "4" => {
-            let outer_size = 4;
-            let inner_size = 1250;
-
-            for _ in 0..outer_size {
-                let mut inner_vec = Vec::new();
-                inner_vec.reserve(inner_size); 
-                result.push(inner_vec);
-            }
-    
-            let mut index = 0;
-            for i in 0..outer_size {
-                for _j in 0..inner_size {
-                    result[i].push(records[index].clone());
+            let index = 0;
+            for line in reader.records() {
+                let temp = String::new();
+                if(index < 1250) {
+                    let record = line?;
+                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    temp = temp + string;
                     index += 1;
+                } else {
+                    let string_as_bytes = temp.to_bytes();
+                    result.push(string_as_bytes);
+                    index = 0;
                 }
             }
         },
         "5" => {
-            let outer_size = 2;
-            let inner_size = 2500;
-    
-            for _ in 0..outer_size {
-                let mut inner_vec = Vec::new();
-                inner_vec.reserve(inner_size); 
-                result.push(inner_vec);
-            }
-    
-            let mut index = 0;
-            for i in 0..outer_size {
-                for _j in 0..inner_size {
-                    result[i].push(records[index].clone());
+            let index = 0;
+            for line in reader.records() {
+                let temp = String::new();
+                if(index < 2500) {
+                    let record = line?;
+                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    temp = temp + string;
                     index += 1;
+                } else {
+                    let string_as_bytes = temp.to_bytes();
+                    result.push(string_as_bytes);
+                    index = 0;
                 }
             }
         },
         "6" => {
-            if let Some(line) = records.first() { //fill the vec with 1 single vec containing all records
-                result.push(vec![line.clone()]); 
+            let index = 0;
+            for line in reader.records() {
+                let temp = String::new();
+                if(index < 5000) {
+                    let record = line?;
+                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    temp = temp + string;
+                    index += 1;
+                } else {
+                    let string_as_bytes = temp.to_bytes();
+                    result.push(string_as_bytes);
+                    index = 0;
+                }
             }
         },
         _ => {
@@ -270,7 +218,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
     let data = data_formating(size);
 
     for line in data {
-        let message = line.vec_of_stringrecords_to_bytes()?;
+        let message = line;
         stream.write_all(message)?;
         stream.flush()?;
     }

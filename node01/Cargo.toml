@@ -8,5 +8,4 @@ csv = "1.1"
 async-rdma = {git = "https://github.com/datenlord/async-rdma/"}
 tokio = { version = "1", features = ["full"] }
 portpicker = "0.1.1"
-serde = { version = "1.0", features = ["derive"] }
-bincode = "1.3"
+
