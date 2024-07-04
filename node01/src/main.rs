@@ -219,7 +219,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
 
     for line in data {
         let message = line.as_bytes();
-        stream.write_all(message.as_bytes())?;
+        stream.write_all(message)?;
         stream.flush()?;
     }
     Ok(())
