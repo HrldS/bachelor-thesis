@@ -111,8 +111,10 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn client_tcp() -> io::Result<()> {
+fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
+
+    println!("size");
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut content = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
@@ -160,7 +162,10 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
 async fn main() -> Result<(), Box<dyn Error>>{
     loop {
         let mut input = String::new();
-        println!("Enter transportation Protocol:");
+        println!("Hallo! This programm tests the latency and bandwidth of the TCP and RDMA transport protocol by sending the content of a csv file to a server for processing.");
+        println!("Afterwards the server sends the processed data back to you.");
+        println!("");
+        println!("Please enter the transportation Protocol you want to test:");
         println!("Protocols available: 'rdma' or 'tcp'");
 
         io::stdin().read_line(&mut input).expect("failed to read");
@@ -197,8 +202,19 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            println!("Please select ");
-            let client_thread = std::thread::spawn(move || client_tcp());   //spawn worker thread to handle the tcp client
+            println!("Please select message size:");
+            println!("1: each row individually");
+            println!("2: 10% size");
+            println!("3: 20% size");
+            println!("4: 25% size");
+            println!("5: 50% size");
+            println!("6: entire file at once");
+
+            let mut size = String::new();
+            io::stdin().read_line(&mut input).expect("failed to read");
+            let size = size.trim();
+
+            let client_thread = std::thread::spawn(move || client_tcp(&size));   //spawn worker thread to handle the tcp client
 
             let listener = TcpListener::bind("192.168.100.51:40999")?;
             let local_addr = listener.local_addr()?;
@@ -208,7 +224,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             for stream in listener.incoming() {
                 match stream {
                     Ok(stream) => {
-                       std::thread::spawn(|| handle_tcp_client(stream));
+                       std::thread::spawn(|| handle_tcp_client(stream));  // spawn worker thread to handle incomming tcp requests
                     }
                     Err(e) => {
                         eprintln!("Connection failed: {}", e);
