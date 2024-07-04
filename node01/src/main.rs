@@ -8,7 +8,7 @@ use portpicker::pick_unused_port;
 use std::{
     alloc::Layout,
     io::{self, Write, Error as IOError, ErrorKind}, //BufWriter,
-    net::{TcpStream, Ipv4Addr, SocketAddrV4}, //TcpListener,
+    net::{TcpListener, TcpStream, Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
 
@@ -204,7 +204,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             let local_addr = listener.local_addr()?;
 
             println!("Server listening on {}", local_addr);
-            
+
             for stream in listener.incoming() {
                 match stream {
                     Ok(stream) => {
@@ -215,14 +215,13 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     }
                 }
             }
-
-            }
             client_thread.join().unwrap();  //wait for the worker thread to finish his work
             println!("Worker has finished");
             break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
         }
+    }
     Ok(())
 }
 
