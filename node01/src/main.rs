@@ -58,11 +58,11 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<[u8]>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
 
-    let mut result: Vec<[u8]> = Vec::new();
+    let mut result: Vec<u8> = Vec::new();
 
     match size {
         "1" => {
