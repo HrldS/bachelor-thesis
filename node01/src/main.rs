@@ -257,7 +257,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
     let data = data_formating(size);
 
     for line in data {
-        let message = linevec_of_stringrecords_to_bytes()?;
+        let message = line.vec_of_stringrecords_to_bytes()?;
         stream.write_all(message)?;
         stream.flush()?;
     }
