@@ -58,11 +58,11 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<[u8]>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
 
-    let mut result: Vec<u8> = Vec::new();
+    let mut result: Vec<[u8]> = Vec::new();
 
     match size {
         "1" => {
@@ -76,13 +76,13 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
             let index = 0;
             for line in reader.records() {
                 let temp = String::new();
-                if(index < 500) {
+                if index < 500 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
-                    temp = temp + string;
+                    temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.to_bytes();
+                    let string_as_bytes = temp.as_bytes();
                     result.push(string_as_bytes);
                     index = 0;
                 }
@@ -92,13 +92,13 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
             let index = 0;
             for line in reader.records() {
                 let temp = String::new();
-                if(index < 1000) {
+                if index < 1000 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
-                    temp = temp + string;
+                    temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.to_bytes();
+                    let string_as_bytes = temp.as_bytes();
                     result.push(string_as_bytes);
                     index = 0;
                 }
@@ -108,13 +108,13 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
             let index = 0;
             for line in reader.records() {
                 let temp = String::new();
-                if(index < 1250) {
+                if index < 1250 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
-                    temp = temp + string;
+                    temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.to_bytes();
+                    let string_as_bytes = temp.as_bytes();
                     result.push(string_as_bytes);
                     index = 0;
                 }
@@ -124,13 +124,13 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
             let index = 0;
             for line in reader.records() {
                 let temp = String::new();
-                if(index < 2500) {
+                if index < 2500 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
-                    temp = temp + string;
+                    temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.to_bytes();
+                    let string_as_bytes = temp.as_bytes();
                     result.push(string_as_bytes);
                     index = 0;
                 }
@@ -140,13 +140,13 @@ fn data_formating(size: &str) -> Result<Vec<u8>, Box<dyn Error>> {
             let index = 0;
             for line in reader.records() {
                 let temp = String::new();
-                if(index < 5000) {
+                if index < 5000 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
-                    temp = temp + string;
+                    temp = temp + &string;
                     index += 1;
                 } else {
-                    let string_as_bytes = temp.to_bytes();
+                    let string_as_bytes = temp.as_bytes();
                     result.push(string_as_bytes);
                     index = 0;
                 }
