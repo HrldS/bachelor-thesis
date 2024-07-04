@@ -87,7 +87,7 @@ impl WriteLine for [u8] {
     }
 }
 
-fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dyn Error>> {
+fn data_formating(size: &str) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
@@ -107,7 +107,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
     let mut result: Vec<Vec<(String, i32, i32, i32)>> = Vec::new();
 
     match size {
-        1 => {
+        "1" => {
             let inner_size = records.len();
 
             for _ in 0..inner_size {  // fill the vec with 5000 vecs
@@ -118,7 +118,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
                 result[index].push(line.clone()); 
             }
         },
-        2 => {
+        "2" => {
             let outer_size = 10;
             let inner_size = 500;
 
@@ -136,7 +136,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
                 }
             }
         },
-        3 => {
+        "3" => {
             let outer_size = 5;
             let inner_size = 1000;
 
@@ -154,7 +154,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
                 }
             }
         },
-        4 => {
+        "4" => {
             let outer_size = 4;
             let inner_size = 1250;
 
@@ -172,7 +172,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
                 }
             }
         },
-        5 => {
+        "5" => {
             let outer_size = 2;
             let inner_size = 2500;
     
@@ -190,7 +190,7 @@ fn data_formating(size: i32) -> Result<Vec<Vec<(String, i32, i32, i32)>>, Box<dy
                 }
             }
         },
-        6 => {
+        "6" => {
             if let Some(line) = records.first() { //fill the vec with 1 single vec containing all records
                 result.push(vec![line.clone()]); 
             }
@@ -254,8 +254,6 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 
 fn client_tcp(size: &str) -> io::Result<()> {
     let mut stream = TcpStream::connect("192.168.100.52:41000")?;
-
-    let size: i32 = size.parse();
 
     let data = data_formating(size).to_2_dim_vec_to_bytes();
 
