@@ -129,7 +129,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             for line in reader.records() {
                 if index < 2501 {
                     let record = line?;
-                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    let string = record.iter().collect::<Vec<_>>().join(";");
                     temp = temp + &string;
                     index += 1;
                 } else {
