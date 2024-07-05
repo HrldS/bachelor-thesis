@@ -74,8 +74,8 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         },
         "2" => {
             let mut index = 0;
+            let mut temp = String::new();
             for line in reader.records() {
-                let mut temp = String::new();
                 if index < 500 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
@@ -90,8 +90,8 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         },
         "3" => {
             let mut index = 0;
+            let mut temp = String::new();
             for line in reader.records() {
-                let mut temp = String::new();
                 if index < 1000 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
@@ -106,8 +106,8 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         },
         "4" => {
             let mut index = 0;
+            let mut temp = String::new();
             for line in reader.records() {
-                let mut temp = String::new();
                 if index < 1250 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
@@ -122,8 +122,8 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         },
         "5" => {
             let mut index = 0;
+            let mut temp = String::new();
             for line in reader.records() {
-                let mut temp = String::new();
                 if index < 2500 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
@@ -138,8 +138,8 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         },
         "6" => {
             let mut index = 0;
+            let mut temp = String::new();
             for line in reader.records() {
-                let mut temp = String::new();
                 if index < 5000 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
