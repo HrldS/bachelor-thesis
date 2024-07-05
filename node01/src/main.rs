@@ -317,7 +317,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                 
                 let mut size = String::new();
                 io::stdin().read_line(&mut size).expect("failed to read");
-                let size_selected = size.trim().to_string();
+                size_selected = size.trim().to_string();
     
                 if (1..=6).contains(&size_select) {
                     let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
