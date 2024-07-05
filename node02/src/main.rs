@@ -4,7 +4,7 @@ use std::net::{TcpListener, TcpStream}; // Ipv4Addr, SocketAddrV4
 
 fn handle_client(stream: TcpStream) -> io::Result<()> {
     let reader = io::BufReader::new(stream);
-    let mut count = 0;
+    let mut count = 1;
     for line in reader.lines() {
         match line {
             Ok(line) => {

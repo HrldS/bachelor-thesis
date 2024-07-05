@@ -76,7 +76,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             let mut index = 0;
             let mut temp = String::new();
             for line in reader.records() {
-                if index < 500 {
+                if index < 501 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
                     temp = temp + &string;
@@ -93,7 +93,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             let mut index = 0;
             let mut temp = String::new();
             for line in reader.records() {
-                if index < 1000 {
+                if index < 1001 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
                     temp = temp + &string;
@@ -110,7 +110,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             let mut index = 0;
             let mut temp = String::new();
             for line in reader.records() {
-                if index < 1250 {
+                if index < 1251 {
                     let record = line?;
                     let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
                     temp = temp + &string;
@@ -144,16 +144,10 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             let mut index = 0;
             let mut temp = String::new();
             for line in reader.records() {
-              //  if index < 5001 {
-                    let record = line?;
-                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
-                    temp = temp + &string;
-                    index += 1;
-              /*  } else {
-                    result.push(temp);
-                    temp = reset_string.clone();
-                    index = 0;
-                } */
+                let record = line?;
+                let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                temp = temp + &string;
+                index += 1;
             }
             result.push(temp);
         },
