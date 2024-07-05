@@ -156,6 +156,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
 
         }
     }
+    println!("Result: {:?}", result)
     Ok(result)
 }
 
