@@ -278,7 +278,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
         if protocol == "rdma" {
             loop {
                 println!("Please choose which RDMA transmission Type you want to use:");
-                println!("SEND, write or atomic")
+                println!("SEND, write or atomic");
                 let mut rdma_type = String::new();
                 io::stdin().read_line(&mut rdma_type).expect("failed to read");
         
@@ -319,7 +319,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                 io::stdin().read_line(&mut size).expect("failed to read");
                 size_selected = size.trim().to_string();
     
-                if (1..=6).contains(&size_select) {
+                if (1..=6).contains(&size_selected) {
                     let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
     
                     let listener = TcpListener::bind("192.168.100.51:40999")?;
