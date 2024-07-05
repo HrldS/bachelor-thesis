@@ -68,7 +68,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         "1" => {
             for line in reader.records() {
                 let record = line?;
-                let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                let string = record.iter().collect::<Vec<_>>().join(";");
                 result.push(string);
             }
         },
@@ -78,7 +78,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             for line in reader.records() {
                 if index < 501 {
                     let record = line?;
-                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    let string = record.iter().collect::<Vec<_>>().join(";");
                     temp = temp + &string;
                     index += 1;
                 } else {
@@ -95,7 +95,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             for line in reader.records() {
                 if index < 1001 {
                     let record = line?;
-                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    let string = record.iter().collect::<Vec<_>>().join(";");
                     temp = temp + &string;
                     index += 1;
                 } else {
@@ -112,7 +112,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             for line in reader.records() {
                 if index < 1251 {
                     let record = line?;
-                    let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                    let string = record.iter().collect::<Vec<_>>().join(";");
                     temp = temp + &string;
                     index += 1;
                 } else {
@@ -145,7 +145,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             let mut temp = String::new();
             for line in reader.records() {
                 let record = line?;
-                let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
+                let string = record.iter().collect::<Vec<_>>().join(";");
                 temp = temp + &string;
                 index += 1;
             }
