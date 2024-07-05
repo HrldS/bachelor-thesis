@@ -4,12 +4,12 @@ use std::net::{TcpListener, TcpStream}; // Ipv4Addr, SocketAddrV4
 
 fn handle_client(stream: TcpStream) -> io::Result<()> {
     let reader = io::BufReader::new(stream);
-    int mut calls = 0;
+    let mut count = 0;
     for line in reader.lines() {
         match line {
             Ok(line) => {
                 println!("Received: {:?}", line);
-                println!("Called {:?}", calls);
+                println!("Called times {}", count);
                 count += 1;
             }
             Err(e) => {
