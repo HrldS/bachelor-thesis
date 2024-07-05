@@ -277,7 +277,8 @@ async fn main() -> Result<(), Box<dyn Error>>{
 
         if protocol == "rdma" {
             loop {
-                println!("Please choose RDMA transmission Type: send, write or atomic");
+                println!("Please choose which RDMA transmission Type you want to use:");
+                println!("SEND, write or atomic")
                 let mut rdma_type = String::new();
                 io::stdin().read_line(&mut rdma_type).expect("failed to read");
         
@@ -305,38 +306,42 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
             break;
         } else if protocol == "tcp" {
-            println!("Please select message size:");
-            println!("1: each row individually");
-            println!("2: 10% size");
-            println!("3: 20% size");
-            println!("4: 25% size");
-            println!("5: 50% size");
-            println!("6: entire file at once");
-
-            let mut size = String::new();
-            io::stdin().read_line(&mut size).expect("failed to read");
-            size_selected = size.trim().to_string();
-
-            let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
-
-            let listener = TcpListener::bind("192.168.100.51:40999")?;
-            let local_addr = listener.local_addr()?;
-
-            println!("Server listening on {}", local_addr);
-
-            for stream in listener.incoming() {
-                match stream {
-                    Ok(stream) => {
-                       std::thread::spawn(|| handle_tcp_client(stream));  // spawn worker thread to handle incomming tcp requests
+            loop {
+                println!("Please select message size:");
+                println!("1: each row individually");
+                println!("2: 10% size");
+                println!("3: 20% size");
+                println!("4: 25% size");
+                println!("5: 50% size");
+                println!("6: entire file at once");
+                
+                let mut size = String::new();
+                io::stdin().read_line(&mut size).expect("failed to read");
+                size_selected = size.trim().to_string();
+    
+                if size_select = 1 || 2 || 3 || 4 || 5 || 6 {
+                    let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
+    
+                    let listener = TcpListener::bind("192.168.100.51:40999")?;
+                    let local_addr = listener.local_addr()?;
+        
+                    println!("Server listening on {}", local_addr);
+        
+                    for stream in listener.incoming() {
+                        match stream {
+                            Ok(stream) => {
+                               std::thread::spawn(|| handle_tcp_client(stream));  // spawn worker thread to handle incomming tcp requests
+                            }
+                            Err(e) => {
+                                eprintln!("Connection failed: {}", e);
+                            }
+                        }
                     }
-                    Err(e) => {
-                        eprintln!("Connection failed: {}", e);
-                    }
+                    client_thread.join().unwrap();  //wait for the worker thread to finish his work
+                    println!("Worker has finished");
                 }
+                break;
             }
-            client_thread.join().unwrap();  //wait for the worker thread to finish his work
-            println!("Worker has finished");
-            break;
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
         }
