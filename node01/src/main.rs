@@ -219,7 +219,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
         Ok(data) => data,
         Err(e) => {
             eprintln!("Error: {}", e);
-            return "fail"; // Exit or handle the error appropriately
+            return (); // Exit or handle the error appropriately
         }
     };
 
