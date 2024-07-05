@@ -87,6 +87,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index = 0;
                 }
             }
+            result.push(temp);
         },
         "3" => {
             let mut index = 0;
@@ -103,6 +104,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index = 0;
                 }
             }
+            result.push(temp);
         },
         "4" => {
             let mut index = 0;
@@ -119,6 +121,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index = 0;
                 }
             }
+            result.push(temp);
         },
         "5" => {
             let mut index = 0;
@@ -135,6 +138,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index = 0;
                 }
             }
+            result.push(temp);
         },
         "6" => {
             let mut index = 0;
@@ -151,6 +155,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                     index = 0;
                 }
             }
+            result.push(temp);
         },
         _ => {
 
