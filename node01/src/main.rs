@@ -222,7 +222,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
             return Ok(()); // Exit or handle the error appropriately
         }
     };
-
+    println!("{:?}", data);
     for line in data {
         let message = line.as_bytes();
         stream.write_all(message)?;
