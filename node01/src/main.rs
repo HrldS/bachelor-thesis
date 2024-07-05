@@ -319,27 +319,25 @@ async fn main() -> Result<(), Box<dyn Error>>{
                 io::stdin().read_line(&mut size).expect("failed to read");
                 size_selected = size.trim().to_string();
     
-                if (1..=6).contains(&size_selected) {
-                    let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
+                let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
     
-                    let listener = TcpListener::bind("192.168.100.51:40999")?;
-                    let local_addr = listener.local_addr()?;
+                let listener = TcpListener::bind("192.168.100.51:40999")?;
+                let local_addr = listener.local_addr()?;
         
-                    println!("Server listening on {}", local_addr);
+                println!("Server listening on {}", local_addr);
         
-                    for stream in listener.incoming() {
-                        match stream {
-                            Ok(stream) => {
-                               std::thread::spawn(|| handle_tcp_client(stream));  // spawn worker thread to handle incomming tcp requests
-                            }
-                            Err(e) => {
-                                eprintln!("Connection failed: {}", e);
-                            }
+                for stream in listener.incoming() {
+                    match stream {
+                        Ok(stream) => {
+                            std::thread::spawn(|| handle_tcp_client(stream));  // spawn worker thread to handle incomming tcp requests
+                        }
+                        Err(e) => {
+                            eprintln!("Connection failed: {}", e);
                         }
                     }
-                    client_thread.join().unwrap();  //wait for the worker thread to finish his work
-                    println!("Worker has finished");
                 }
+                client_thread.join().unwrap();  //wait for the worker thread to finish his work
+                println!("Worker has finished");
                 break;
             }
         } else {
