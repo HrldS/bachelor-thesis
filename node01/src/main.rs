@@ -68,7 +68,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
         "1" => {
             for line in reader.records() {
                 let record = line?;
-                let string = record.iter().collect::<Vec<_>>().join(";");
+                let string = record.iter().collect::<Vec<_>>().join(";") + "\n";
                 result.push(string);
             }
         },
