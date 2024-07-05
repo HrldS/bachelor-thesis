@@ -141,7 +141,6 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
             result.push(temp);
         },
         "6" => {
-            let mut index = 0;
             let mut temp = String::new();
             for line in reader.records() {
                 let record = line?;
@@ -338,7 +337,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                             }
                         }
                     }
-                    client_thread.join().unwrap();  //wait for the worker thread to finish his work
+                    let _ = client_thread.join().unwrap();  //wait for the worker thread to finish his work
                     println!("Worker has finished");
                     break;
                 } else {
