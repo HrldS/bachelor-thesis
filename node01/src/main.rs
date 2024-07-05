@@ -146,7 +146,6 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
                 let record = line?;
                 let string = record.iter().collect::<Vec<_>>().join(";");
                 temp = temp + &string;
-                index += 1;
             }
             result.push(temp);
         },
