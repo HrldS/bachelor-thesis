@@ -36,9 +36,9 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
 
     let mut reader = csv::Reader::from_reader(data_buffer.as_slice());  //read the data from the buffer
 
-    let mut writer = Writer::from_writer(Vec::new()); //prepare 
+    let mut message_buffer = Writer::from_writer(Vec::new()); //the buffer to write the processed records to
 
-    for content in reader.records() {
+    for content in reader.records() {  // calculate the volume for each record in the received csv file
         let record = content?;
         
         // get the 3 necessary values from the csv record to calculate the volume
@@ -48,14 +48,14 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         let object_volume = col1 * col2 * col3;
         
         let mut new_record = record.clone();    // take the original record
-        new_record.push_field(&object_volume.to_string()); // add the volume to the record
+        new_record.push_field(&object_volume.to_string()); // create the processed record by adding the volume to the original record
         
-        writer.write_record(&new_record)?; //write the new record into the send buffer
+        writer.write_record(&new_record)?; //write all records into the message buffer
     }
 
-    let send_message = writer.into_inner()?; // turn the record into bytes
+    let send_message = writer.into_inner()?; // return the bytes of the processed record
 
-    stream.write_all(&send_message).await?;
+    stream.write_all(&send_message).await?; //send the processed message bytes back to client
 
     stream.flush().await?; // ensure that the entire message is send
 
@@ -85,14 +85,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let local_addr = listener.local_addr()?;
     println!("Server listening on: {}", local_addr);
         
-        // Accept incoming connections and handle them concurrently
     while let Ok((stream, _)) = listener.accept().await {
-        println!("New connection: {:?}", stream.peer_addr());
+        println!("New connection: {:?}", stream.peer_addr());  //print incoming client ip address
             
-            // Spawn a new task to handle each client
+            // Spawn a new tokio task to handle each client
         tokio::spawn(async move {
             if let Err(err) = handle_client(stream).await {
-                eprintln!("Error handling client: {}", err);
+                eprintln!("Error handling client: {}", err); 
             }
         });
     }
