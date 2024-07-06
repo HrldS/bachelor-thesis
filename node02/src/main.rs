@@ -1,8 +1,18 @@
+extern crate csv;
+extern crate tokio;
+/*
 use std::io::{self, BufRead};
 use std::net::{TcpListener, TcpStream}; // Ipv4Addr, SocketAddrV4
 //use portpicker::pick_unused_port;
+*/
+use std::error::Error;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::{TcpListener,TcpStream};
+use csv::Writer;
+use csv::StringRecord;
 
-fn handle_client(stream: TcpStream) -> io::Result<()> {
+async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
+    /*
     let reader = io::BufReader::new(stream);
     let mut count = 1;
     for line in reader.lines() {
@@ -19,12 +29,45 @@ fn handle_client(stream: TcpStream) -> io::Result<()> {
         }
     }
     Ok(())
+    */
+    let mut data_buffer = Vec::new();
+
+    stream.read_to_end(&mut data_buffer).await?;
+
+    let mut reader = csv::Reader::from_reader(data_buffer.as_slice());  //read the data from the buffer
+
+    let mut writer = Writer::from_writer(Vec::new()); //prepare 
+
+    for content in reader.records() {
+        let record = content?;
+        
+        // get the 3 necessary values from the csv record to calculate the volume
+        let col1: i32 = record[1].parse()?;     
+        let col2: i32 = record[2].parse()?;
+        let col3: i32 = record[3].parse()?;
+        let object_volume = col1 * col2 * col3;
+        
+        let mut new_record = record.clone();    // take the original record
+        new_record.push_field(&object_volume.to_string()); // add the volume to the record
+        
+        writer.write_record(&new_record)?; //write the new record into the send buffer
+    }
+
+    let send_message = writer.into_inner()?; // turn the record into bytes
+
+    stream.write_all(&send_message).await?;
+
+    stream.flush().await?; // ensure that the entire message is send
+
+    Ok(())
 }
 
-fn main() -> io::Result<()> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    /*
     let listener = TcpListener::bind("192.168.100.52:41000")?;
     let local_addr = listener.local_addr()?;
-    println!("Server listening on {}", local_addr);
+    println!("Server listening on: {}", local_addr);
 
     for stream in listener.incoming() {
         match stream {
@@ -36,5 +79,23 @@ fn main() -> io::Result<()> {
             }
         }
     }
+    Ok(())
+    */
+    let listener = TcpListener::bind("192.168.100.52:41000").await?;
+    let local_addr = listener.local_addr()?;
+    println!("Server listening on: {}", local_addr);
+        
+        // Accept incoming connections and handle them concurrently
+    while let Ok((stream, _)) = listener.accept().await {
+        println!("New connection: {:?}", stream.peer_addr());
+            
+            // Spawn a new task to handle each client
+        tokio::spawn(async move {
+            if let Err(err) = handle_client(stream).await {
+                eprintln!("Error handling client: {}", err);
+            }
+        });
+    }
+        
     Ok(())
 }

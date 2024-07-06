@@ -277,11 +277,11 @@ async fn main() -> Result<(), Box<dyn Error>>{
             loop {
                 println!("Please choose which RDMA transmission Type you want to use:");
                 println!("SEND, write or atomic");
+
                 let mut rdma_type = String::new();
                 io::stdin().read_line(&mut rdma_type).expect("failed to read");
-        
                 let rdma_type = rdma_type.trim();
-        
+
                 if rdma_type == "send" {
                     let data = read_file()?;
         
