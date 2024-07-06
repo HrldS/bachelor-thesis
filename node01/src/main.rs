@@ -228,6 +228,7 @@ fn client_tcp(size: &str) -> io::Result<()> {
     Ok(())
 }
 
+/*
 fn handle_tcp_client(stream: TcpStream) -> io::Result<()> {
     let reader = io::BufReader::new(stream);
 
@@ -242,6 +243,7 @@ fn handle_tcp_client(stream: TcpStream) -> io::Result<()> {
     }
     Ok(())
 }
+*/
 
 #[tokio::main]
 async fn server(addr: SocketAddrV4) -> io::Result<()> {
@@ -325,7 +327,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
             }
                 
             let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
-    
+            /*
             let listener = TcpListener::bind("192.168.100.51:40999")?;
             let local_addr = listener.local_addr()?;
         
@@ -341,6 +343,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     }
                 }
             }
+            */
             let _ = client_thread.join().unwrap();  //wait for the worker thread to finish his work
             println!("Worker has finished");
         } else {
