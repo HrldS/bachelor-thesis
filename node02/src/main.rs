@@ -9,7 +9,8 @@ use std::error::Error;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener,TcpStream};
 use csv::Writer;
-use csv::StringRecord;
+use std::io;
+
 
 async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     /*
@@ -50,10 +51,10 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         let mut new_record = record.clone();    // take the original record
         new_record.push_field(&object_volume.to_string()); // create the processed record by adding the volume to the original record
         
-        writer.write_record(&new_record)?; //write all records into the message buffer
+        message_buffer.write_record(&new_record)?; //write all records into the message buffer
     }
 
-    let send_message = writer.into_inner()?; // return the bytes of the processed record
+    let send_message = message_buffer.into_inner()?; // return the bytes of the processed record
 
     stream.write_all(&send_message).await?; //send the processed message bytes back to client
 
@@ -81,20 +82,42 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
     Ok(())
     */
-    let listener = TcpListener::bind("192.168.100.52:41000").await?;
-    let local_addr = listener.local_addr()?;
-    println!("Server listening on: {}", local_addr);
-        
-    while let Ok((stream, _)) = listener.accept().await {
-        println!("New connection: {:?}", stream.peer_addr());  //print incoming client ip address
-            
-            // Spawn a new tokio task to handle each client
-        tokio::spawn(async move {
-            if let Err(err) = handle_client(stream).await {
-                eprintln!("Error handling client: {}", err); 
-            }
-        });
+    
+    let mut server_type = String::new();
+    loop {
+        let mut input = String::new();
+        println!("Please select one of these Transportation protocol types: rdma or tcp");
+        io::stdin().read_line(&mut input).expect("failed to read server_type");
+
+        server_type = input.trim().to_string();
+    
+        if server_type == "rdma" {
+            break;
+        } else if server_type == "tcp" {
+            break;
+        } else {
+            println!("The Transportation protocol: {:?} is not supported", server_type);
+        }
+    
     }
         
+    if server_type == "tcp" {
+        let listener = TcpListener::bind("127.0.0.1:8080").await?;        //192.168.100.52:41000
+        let local_addr = listener.local_addr()?;
+        println!("Server listening on: {}", local_addr);
+                
+        while let Ok((stream, _)) = listener.accept().await {
+            println!("New connection: {:?}", stream.peer_addr());  //print incoming client ip address
+                    
+                    // Spawn a new tokio task to handle each client
+            tokio::spawn(async move {
+                if let Err(err) = handle_client(stream).await {
+                    eprintln!("Error handling client: {}", err); 
+                }
+            });
+        }   
+        ()
+    }
+    println!("The Transportation protocol: {:?} choosen!", server_type);
     Ok(())
 }
