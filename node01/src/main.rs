@@ -327,7 +327,7 @@ async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
         io::stdin().read_line(&mut size_selected)?;
         let size_selected = size_selected.trim().to_string();
 
-        if valid_size_option(&size_selected) {
+        if valid_size(&size_selected) {
             let handle = tokio::spawn(async move {
                 client_tcp(&size_selected).await.unwrap_or_else(|err| {
                     eprintln!("Client error: {:?}", err);
