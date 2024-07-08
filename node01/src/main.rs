@@ -278,7 +278,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     writer.shutdown().await?;
     println!("past shutdown of writer");
     let mut server_response = String::new();
-    reader.read_line(&mut server_response).await?;
+    reader.read_to_end(&mut server_response).await?;
     println!("Received the following response form the server: {}", server_response);
 
     Ok(())
