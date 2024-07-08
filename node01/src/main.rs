@@ -13,7 +13,7 @@ use std::{
 };
 use tokio::io::{AsyncWriteExt, AsyncBufReadExt, BufReader};
 use tokio::net::TcpStream;
-use tokio::fs::File as TokioFile;
+use tokio::fs::File;
 
 
 trait WriteLine {
@@ -265,7 +265,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
         }
     };
 
-    let mut file = TokyoFile::open(&file_path).await?;
+    let mut file = File::open(&file_path).await?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).await?;
 
