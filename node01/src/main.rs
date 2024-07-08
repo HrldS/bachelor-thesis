@@ -267,7 +267,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
         }
     };
 
-    println!("Debug: filepath: {:?}" file_path);
+    println!("Debug: filepath: {:?}", file_path);
     let mut file = OtherFile::open(&file_path).await?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).await?;
