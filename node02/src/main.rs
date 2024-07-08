@@ -35,7 +35,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     let mut data_buffer = Vec::new();
 
     stream.read_to_end(&mut data_buffer).await?;        //write the data from the stream into the data_buffer
-    println("after read_to_end");
+    println!("after read_to_end");
     let mut reader = csv::Reader::from_reader(data_buffer.as_slice());  //read the data from the data_buffer
 
     let mut message_buffer = Writer::from_writer(Vec::new()); //create the buffer to write the processed records into
