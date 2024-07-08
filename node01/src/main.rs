@@ -13,6 +13,7 @@ use std::{
 };
 use tokio::io::{AsyncWriteExt, AsyncBufReadExt, BufReader};
 use tokio::net::TcpStream;
+use tokio::fs::File as Tokio_file;
 
 
 trait WriteLine {
@@ -260,7 +261,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
         }
     };
 
-    let mut file = File::open(&file_path).await?;
+    let mut file = Tokyo_file::open(&file_path).await?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).await?;
 
@@ -373,7 +374,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                     println!("This size option: {:?} does not exist!", size_selected);
                 }
             }
-                
+            size_selected = &size_selected;
             let handle = tokio::spawn(client_tcp(&size_selected)); //spawn worker thread to handle the tcp client
             handle.await.unwrap();   //wait for the worker thread to finish his work
             
