@@ -375,7 +375,7 @@ async fn main() -> Result<(), Box<dyn Error>>{
                 }
             }
                 
-            let handle = tokio::spawn(client_tcp(size_selected)); //spawn worker thread to handle the tcp client
+            let handle = tokio::spawn(client_tcp(&size_selected)); //spawn worker thread to handle the tcp client
             handle.await.unwrap();   //wait for the worker thread to finish his work
             
             println!("Worker has finished");
