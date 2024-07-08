@@ -11,7 +11,7 @@ use std::{
     net::SocketAddrV4,
 };
 use tokio::{
-    fs::File,  // Import Tokio's File here
+    fs::File as OtherFile,  // Import Tokio's File here
     io::{AsyncWriteExt, AsyncBufReadExt, BufReader},
     net::TcpStream,
 };
@@ -226,7 +226,7 @@ async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
 async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     let rdma = Rdma::connect(addr, 1, 1, 512).await?;
 
-    let file = File::open("src/data/test_data.csv").await?;  //? try reading file
+    let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     for line in contant.records() {
@@ -266,7 +266,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
         }
     };
 
-    let mut file = File::open(&file_path).await?;
+    let mut file = OtherFile::open(&file_path).await?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).await?;
 
