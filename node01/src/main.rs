@@ -271,11 +271,12 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     let mut file = OtherFile::open(&file_path).await?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).await?;
-    println!("Debug: {:?}", &buffer);
-    println!("past read_to_end");
+
     writer.write_all(&buffer).await?;
     writer.flush().await?;
-    println!("past write");
+
+    writer.shutdown().await?;
+    println!("past shutdown of writer");
     let mut server_response = String::new();
     reader.read_line(&mut server_response).await?;
     println!("Received the following response form the server: {}", server_response);

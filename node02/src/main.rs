@@ -14,24 +14,7 @@ use std::io;
 
 async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     println!("first line");
-    /*
-    let reader = io::BufReader::new(stream);
-    let mut count = 1;
-    for line in reader.lines() {
-        match line {
-            Ok(line) => {
-                println!("Received: {:?}", line);
-                println!("Called times {}", count);
-                count += 1;
-            }
-            Err(e) => {
-                eprintln!("Error reading from client: {}", e);
-                break;
-            }
-        }
-    }
-    Ok(())
-    */
+
     let mut data_buffer = Vec::new();
 
     stream.read_to_end(&mut data_buffer).await?;        //write the data from the stream into the data_buffer
@@ -61,6 +44,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
 
     stream.flush().await?; // ensure that the entire message is send
 
+    stream.shutdown().await?;
     Ok(())
 }
 
@@ -123,3 +107,23 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("The Transportation protocol: {:?} choosen!", server_type);
     Ok(())
 }
+
+    /*
+    handle_client:
+    let reader = io::BufReader::new(stream);
+    let mut count = 1;
+    for line in reader.lines() {
+        match line {
+            Ok(line) => {
+                println!("Received: {:?}", line);
+                println!("Called times {}", count);
+                count += 1;
+            }
+            Err(e) => {
+                eprintln!("Error reading from client: {}", e);
+                break;
+            }
+        }
+    }
+    Ok(())
+    */
