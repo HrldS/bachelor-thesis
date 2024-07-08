@@ -9,6 +9,7 @@ use std::{
     alloc::Layout,
     io::{self, Error as IOError, ErrorKind, Write},
     net::SocketAddrV4,
+    time::{Instant, Duration},
 };
 use tokio::{
     fs::File as OtherFile,  // Import Tokio's File here
@@ -255,6 +256,7 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
 }
 
 async fn client_tcp(size: &str) -> io::Result<()> {
+    let start_time = Instant::now();
     let stream = TcpStream::connect("192.168.100.52:41000").await?;
     let (reader, mut writer) = stream.into_split();
     let mut reader = BufReader::new(reader);
@@ -282,7 +284,8 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     reader.read_to_end(&mut server_response).await?;
     let response_str = String::from_utf8_lossy(&server_response);
     println!("Received the following response form the server: {}", response_str);
-
+    let elapsed_time = start_time.elapsed();
+    println!("Time needed: {:?}", elapsed_time.as_millis());
     Ok(())
 }
 
