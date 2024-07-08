@@ -26,6 +26,8 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     for content in reader.records() {  // calculate the volume for each record in the received csv file
         let record = content?;
         
+        println!("Processing Record: {:?}", record);
+
         // get the 3 necessary values from the csv record to calculate the volume
         let col1: i32 = record[1].parse()?;     
         let col2: i32 = record[2].parse()?;
