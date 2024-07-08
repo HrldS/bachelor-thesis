@@ -39,7 +39,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     }
 
     let send_message = message_buffer.into_inner()?; // return the bytes of the processed record
-
+    println!("Called");
     stream.write_all(&send_message).await?; //send the processed message bytes back to client
 
     stream.flush().await?; // ensure that the entire message is send
