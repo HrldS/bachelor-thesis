@@ -275,7 +275,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     println!("past read_to_end");
     writer.write_all(&buffer).await?;
     writer.flush().await?;
-
+    println!("past write");
     let mut server_response = String::new();
     reader.read_line(&mut server_response).await?;
     println!("Received the following response form the server: {}", server_response);
