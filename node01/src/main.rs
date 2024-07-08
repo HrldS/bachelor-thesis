@@ -285,7 +285,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     let response_str = String::from_utf8_lossy(&server_response);
     println!("Received the following response form the server: {}", response_str);
     let elapsed_time = start_time.elapsed();
-    println!("Time needed: {:?}", elapsed_time.as_millis());
+    println!("Time needed: {:?} ms", elapsed_time.as_millis());
     Ok(())
 }
 
