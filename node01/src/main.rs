@@ -11,6 +11,10 @@ use std::{
     net::{TcpListener, TcpStream, Ipv4Addr, SocketAddrV4},
     time::Duration 
 };
+use tokio::io::{self, AsyncWriteExt, AsyncBufReadExt, BufReader, AsyncReadExt};
+use tokio::net::TcpStream;
+use tokio::fs::File;
+
 
 trait WriteLine {
     fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize>;
@@ -58,6 +62,7 @@ impl WriteLine for [u8] {
     }
 }
 
+/*
 fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
     let file = File::open("src/data/test_data.csv")?;
     let mut reader = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file);
@@ -155,6 +160,7 @@ fn data_formating(size: &str) -> Result<Vec<String>, Box<dyn Error>> {
     }
     Ok(result)
 }
+*/
 
 fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
@@ -177,6 +183,39 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
         records.push((name, a, b, c));
     }
     Ok(records)
+}
+
+async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
+    let file_path = match size {
+        "1" = "src/data/test_data_100kb.csv",
+        "2" = "src/data/test_data_200kb.csv",
+        "3" = "src/data/test_data_500kb.csv",
+        "4" = "src/data/test_data_1mb.csv",
+        "5" = "src/data/test_data_2mb.csv",
+        "6" = "src/data/test_data_3,5mb.csv",
+        "7" = "src/data/test_data_4,5mb.csv",
+        "8" = "src/data/test_data_5,5mb.csv",
+        "9" = "src/data/test_data_6mb.csv",
+        "10" = "src/data/test_data_7mb.csv",
+        "11" = "src/data/test_data_8mb.csv",
+        "12" = "src/data/test_data_8,5mb.csv",
+        "13" = "src/data/test_data_9mb.csv",
+        "14" = "src/data/test_data_9,5mb.csv",
+        "15" = "src/data/test_data_10,5mb.csv",
+        "16" = "src/data/test_data_11,5mb.csv",
+        "17" = "src/data/test_data_12mb.csv",
+        "18" = "src/data/test_data_13mb.csv",
+        "19" = "src/data/test_data_14mb.csv",
+        "20" = "src/data/test_data_15mb.csv",
+        "21" = "src/data/test_data_16mb.csv",
+        "22" = "src/data/test_data_17mb.csv",
+        "23" = "src/data/test_data_18mb.csv",
+        "24" = "src/data/test_data_19mb.csv",
+        "25" = "src/data/test_data_20mb.csv",
+        _ => return Err("Invalid size selected".into()),
+    };
+
+    Ok(file_path.to_string())
 }
 
 async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
@@ -209,22 +248,30 @@ async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn client_tcp(size: &str) -> io::Result<()> {
-    let mut stream = TcpStream::connect("192.168.100.52:41000")?;
+async fn client_tcp(size: &str) -> io::Result<()> {
+    let stream = TcpStream::connect("192.168.100.52:41000").await?;
+    let (reader, mut writer) = stream.into_split();
+    let mut reader = BufReader::new(reader);
 
-    let data = match data_formating(size) {
+    let file_path = match data_path(size).await {
         Ok(data) => data,
         Err(e) => {
             eprintln!("Error: {}", e);
-            return Ok(()); // Exit or handle the error appropriately
+            return Ok(()); 
         }
     };
-    println!("{:?}", data.len());
-    for line in data {
-        let message = line.as_bytes();
-        stream.write_all(message)?;
-        stream.flush()?;
-    }
+
+    let mut file = File::open(&file_path).await?;
+    let mut buffer = Vec::new();
+    file.read_to_end(&mut buffer).await?;
+
+    writer.write_all(&buffer).await?;
+    writer.flush().await?;
+
+    let mut server_response = String::new();
+    reader.read_line(&mut server_response).await?;
+    println!("Received the following response form the server: {}", server_response);
+
     Ok(())
 }
 
@@ -291,27 +338,46 @@ async fn main() -> Result<(), Box<dyn Error>>{
         } else if protocol == "tcp" {
             loop {
                 println!("Please select one of these message sizes:");
-                println!("1: Send each row individually");
-                println!("2: 10% size");
-                println!("3: 20% size");
-                println!("4: 25% size");
-                println!("5: 50% size");
-                println!("6: Send the entire file at once");
+                println!("1: 100kb");
+                println!("2: 200kb size");
+                println!("3: 500kb size");
+                println!("4: 1MB size");
+                println!("5: 2MB size");
+                println!("6: 3.5MB size");
+                println!("7: 4.5MB size");
+                println!("8: 5.5MB size");
+                println!("9: 6MB size");
+                println!("10: 7MB size");
+                println!("11: 8MB size");
+                println!("12: 8.5MB size");
+                println!("13: 9MB size");
+                println!("14: 9.5MB size");
+                println!("15: 10.5MB size");
+                println!("16: 11.5MB size");
+                println!("17: 12MB size");
+                println!("18: 13MB size");
+                println!("19: 14MB size");
+                println!("20: 15MB size");
+                println!("21: 16MB size");
+                println!("22: 17MB size");
+                println!("23: 18MB size");
+                println!("24: 19MB size");
+                println!("25: 20MB size");
                 
                 let mut size = String::new();
                 io::stdin().read_line(&mut size).expect("failed to read");
                 size_selected = size.trim().to_string();
 
-                if matches!(size_selected.as_str(), "1" | "2" | "3" | "4" | "5" | "6") {
+                if matches!(size_selected.as_str(), "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") {
                     break;
                 } else {
-                    println!("This size: {:?} does not exist!", size_selected);
+                    println!("This size option: {:?} does not exist!", size_selected);
                 }
             }
                 
-            let client_thread = std::thread::spawn(move || client_tcp(&size_selected));   //spawn worker thread to handle the tcp client
-
-            let _ = client_thread.join().unwrap();  //wait for the worker thread to finish his work
+            let handle = tokio::spawn(client_tcp(size_selected)); //spawn worker thread to handle the tcp client
+            handle.await.unwrap();   //wait for the worker thread to finish his work
+            
             println!("Worker has finished");
             break;
         } else {

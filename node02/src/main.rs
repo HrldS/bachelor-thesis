@@ -33,11 +33,11 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     */
     let mut data_buffer = Vec::new();
 
-    stream.read_to_end(&mut data_buffer).await?;
+    stream.read_to_end(&mut data_buffer).await?;        //write the data from the stream into the data_buffer
 
-    let mut reader = csv::Reader::from_reader(data_buffer.as_slice());  //read the data from the buffer
+    let mut reader = csv::Reader::from_reader(data_buffer.as_slice());  //read the data from the data_buffer
 
-    let mut message_buffer = Writer::from_writer(Vec::new()); //the buffer to write the processed records to
+    let mut message_buffer = Writer::from_writer(Vec::new()); //create the buffer to write the processed records into
 
     for content in reader.records() {  // calculate the volume for each record in the received csv file
         let record = content?;
@@ -51,7 +51,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
         let mut new_record = record.clone();    // take the original record
         new_record.push_field(&object_volume.to_string()); // create the processed record by adding the volume to the original record
         
-        message_buffer.write_record(&new_record)?; //write all records into the message buffer
+        message_buffer.write_record(&new_record)?; //write the processed records into the message buffer
     }
 
     let send_message = message_buffer.into_inner()?; // return the bytes of the processed record
