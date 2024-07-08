@@ -185,6 +185,10 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
     Ok(records)
 }
 
+fn valid_size(size: &str) -> bool {
+    if matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") 
+}
+
 async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
     let file_path = match size {
         "1" => "src/data/test_data_100kb.csv",
@@ -290,6 +294,128 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
     Ok(())
 }
 
+async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
+    loop {
+        println!("Please select one of these message sizes:");
+        println!("1: 100kb");
+        println!("2: 200kb size");
+        println!("3: 500kb size");
+        println!("4: 1MB size");
+        println!("5: 2MB size");
+        println!("6: 3.5MB size");
+        println!("7: 4.5MB size");
+        println!("8: 5.5MB size");
+        println!("9: 6MB size");
+        println!("10: 7MB size");
+        println!("11: 8MB size");
+        println!("12: 8.5MB size");
+        println!("13: 9MB size");
+        println!("14: 9.5MB size");
+        println!("15: 10.5MB size");
+        println!("16: 11.5MB size");
+        println!("17: 12MB size");
+        println!("18: 13MB size");
+        println!("19: 14MB size");
+        println!("20: 15MB size");
+        println!("21: 16MB size");
+        println!("22: 17MB size");
+        println!("23: 18MB size");
+        println!("24: 19MB size");
+        println!("25: 20MB size");
+
+        let mut size_selected = String::new();
+        io::stdin().read_line(&mut size_selected)?;
+        let size_selected = size_selected.trim().to_string();
+
+        if valid_size_option(&size_selected) {
+            let handle = tokio::spawn(async move {
+                client_tcp(&size_selected).await.unwrap_or_else(|err| {
+                    eprintln!("Client error: {:?}", err);
+                });
+            });
+
+            handle.await.unwrap_or_else(|err| {
+                eprintln!("Handle error: {:?}", err);
+            });
+
+            println!("Worker has finished");
+            break;
+        } else {
+            println!("Invalid size option: {:?}", size_selected);
+        }
+    }
+    Ok(())
+}
+
+async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
+    loop {
+        println!("Please choose which RDMA transmission Type you want to use:");
+        println!("SEND, write or atomic");
+
+        let mut rdma_type = String::new();
+        io::stdin().read_line(&mut rdma_type)?;
+
+        let rdma_type = rdma_type.trim();
+
+        match rdma_type {
+            "send" => {
+                let data = read_file()?;
+                for tupel in data {
+                    println!("{:?}", tupel);
+                }
+                break;
+            }
+            "write" => {
+                let addr = std::net::SocketAddrV4::new(std::net::Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
+                std::thread::spawn(move || server(addr));
+                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                client_rdma(addr, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
+                break;
+            }
+            "atomic" => {
+                println!("{:?}", rdma_type);
+                break;
+            }
+            _ => {
+                println!("Transmission type: '{}' does not exist!", rdma_type);
+            }
+        }
+    }
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
+    loop {
+        println!("Hallo! This programm tests the latency and bandwidth of the TCP and RDMA transport protocol by sending the content of a csv file to a server for processing.");
+        println!("Afterwards the server sends the processed data back to you.");
+        println!("");
+        println!("Please enter the transportation Protocol you want to test:");
+        println!("Protocols available: 'rdma' or 'tcp'");
+
+        let mut protocol = String::new();
+        io::stdin().read_line(&mut protocol)?;
+        let protocol = protocol.trim();
+
+        match protocol {
+            "rdma" => {
+                handle_rdma_protocol().await?;
+                break;
+            }
+            "tcp" => {
+                handle_tcp_protocol().await?;
+                break;
+            }
+            _ => {
+                println!("Protocol '{}' does not exist!", protocol);
+            }
+        }
+    }
+
+    Ok(())
+}
+
+/*
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>>{
     loop {
@@ -366,20 +492,25 @@ async fn main() -> Result<(), Box<dyn Error>>{
                 
                 let mut size = String::new();
                 io::stdin().read_line(&mut size).expect("failed to read");
-                size_selected = size.trim().to_string();
+                let size_selected = size.trim().to_string();
 
-                if matches!(size_selected.as_str(), "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") {
+                if valid_size(&size_selected) {
+                    let handle = tokio::spawn(async move {
+                        client_tcp(&size_selected).await.unwrap_or_else(|err| {
+                            eprintln!("Client error: {:?}", err);
+                        });
+                    });
+
+                    handle.await.unwrap_or_else(|err| {
+                        eprintln!("Handle error: {:?}", err);
+                    });
+                    println!("Worker has finished");
                     break;
-                } else {
-                    println!("This size option: {:?} does not exist!", size_selected);
                 }
+            } lese {
+
             }
-            let size_selected = size_selected;
-            let handle = tokio::spawn(client_tcp(&size_selected)); //spawn worker thread to handle the tcp client
-            handle.await.unwrap();   //wait for the worker thread to finish his work
-            
-            println!("Worker has finished");
-            break;
+
         } else {
             println!("Protocol: {:?} does not exist!", protocol);
         }
