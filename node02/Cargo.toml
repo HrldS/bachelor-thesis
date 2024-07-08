@@ -1,11 +1,10 @@
 [package]
-name = "node02"
+name = "bachelor-thesis_cargo"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-portpicker = "0.1.1"
+csv = "1.1"
 async-rdma = {git = "https://github.com/datenlord/async-rdma/"}
 tokio = { version = "1", features = ["full"] }
-tokio-util = "0.6"
-csv = "1.1"
+portpicker = "0.1.1"
