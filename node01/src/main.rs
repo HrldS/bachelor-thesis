@@ -187,6 +187,7 @@ fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
 }
 
 fn valid_size(size: &str) -> bool {
+    println!("valid_size");
     matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") 
 }
 
@@ -266,6 +267,7 @@ async fn client_tcp(size: &str) -> io::Result<()> {
         }
     };
 
+    println!("Debug: filepath: {:?}" file_path);
     let mut file = OtherFile::open(&file_path).await?;
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).await?;
@@ -351,7 +353,7 @@ async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
 async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
     loop {
         println!("Please choose which RDMA transmission Type you want to use:");
-        println!("SEND, write or atomic");
+        println!("send, write or atomic");
 
         let mut rdma_type = String::new();
         io::stdin().read_line(&mut rdma_type)?;
