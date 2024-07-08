@@ -308,7 +308,7 @@ async fn server(addr: SocketAddrV4) -> io::Result<()> {
 async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
     loop {
         println!("Please select one of these message sizes:");
-        println!("1: 100kb");
+        println!("1: 100kb size");
         println!("2: 200kb size");
         println!("3: 500kb size");
         println!("4: 1MB size");
