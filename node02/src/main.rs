@@ -13,6 +13,7 @@ use std::io;
 
 
 async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
+    println!("first line");
     /*
     let reader = io::BufReader::new(stream);
     let mut count = 1;
@@ -34,7 +35,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     let mut data_buffer = Vec::new();
 
     stream.read_to_end(&mut data_buffer).await?;        //write the data from the stream into the data_buffer
-
+    println("after read_to_end");
     let mut reader = csv::Reader::from_reader(data_buffer.as_slice());  //read the data from the data_buffer
 
     let mut message_buffer = Writer::from_writer(Vec::new()); //create the buffer to write the processed records into
@@ -111,6 +112,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     
                     // Spawn a new tokio task to handle each client
             tokio::spawn(async move {
+                println!("inside tokyo spawn");
                 if let Err(err) = handle_client(stream).await {
                     eprintln!("Error handling client: {}", err); 
                 }
