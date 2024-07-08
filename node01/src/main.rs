@@ -12,7 +12,7 @@ use std::{
 };
 use tokio::{
     fs::File as OtherFile,  // Import Tokio's File here
-    io::{AsyncWriteExt, AsyncBufReadExt, BufReader},
+    io::{AsyncWriteExt,AsyncReadExt, AsyncBufReadExt, BufReader},
     net::TcpStream,
 };
 
