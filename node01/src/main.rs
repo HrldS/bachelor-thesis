@@ -7,7 +7,7 @@ use portpicker::pick_unused_port;
 use std::{
     fs::File;
     alloc::Layout,
-    io::{self, Error as IOError, ErrorKind},
+    io::{self, Error as IOError, ErrorKind, Write},
     net::SocketAddrV4,
 };
 use tokio::{
