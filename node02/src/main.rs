@@ -42,7 +42,7 @@ async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     println!("Called");
     stream.write_all(&send_message).await?; //send the processed message bytes back to client
 
-    stream.flush().await?; // ensure that the entire message is send
+    stream.flush().await?; // ensure that the entire message is send test
 
     stream.shutdown().await?;
     Ok(())
