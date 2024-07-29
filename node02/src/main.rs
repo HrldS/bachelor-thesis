@@ -51,10 +51,12 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
     let mut rmr_response = rdma.request_remote_mr(layout).await?;
 
     let _num = lmr_response.as_mut_slice().copy_from_slice(&processed_data);
-
+    println!("lmr written");
     rdma.write(&lmr_response, &mut rmr_response).await?;
+    println!("rmda written");
 
     rdma.send_remote_mr(rmr_response).await?;
+    println!("send");
 
     Ok(())
 }
