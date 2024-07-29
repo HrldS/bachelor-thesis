@@ -9,8 +9,6 @@ use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, Rdma
 use std::io;
 
 async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
-    //let rdma_listener = RdmaListener::bind(addr).await?;
-    // Handle the RDMA client connection here
     let rdma = RdmaBuilder::default().listen(&addr).await?;
     let lmr = rdma.receive_local_mr().await?;
 
