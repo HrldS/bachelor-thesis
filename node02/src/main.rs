@@ -17,7 +17,7 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
     println!("Debug Server: {:?}", lmr.as_slice());
     println!();
 
-    let lmr_contant = lmr.as_slice()?; 
+    let lmr_contant = lmr.as_slice(); 
     println!("Server received: {:?}", lmr_contant);
     Ok(())
 }
@@ -102,7 +102,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     } else if server_type == "rdma" {
         tokio::spawn(async move {
             println!("inside tokyo spawn");
-            if let Err(err) = rdma_handle_client("192.168.100.52:41000").await {
+            if let Err(err) = rdma_handle_client("192.168.100.52:41000".to_string()).await {
                 eprintln!("Error handling client: {}", err); 
             }
         });
