@@ -169,7 +169,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
     let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     if rdma_type == "write" {
-        let layout = Layout::for_value(file);
+        let layout = Layout::for_value(&file);
 
         let mut lmr = rdma.alloc_local_mr(layout)?;
         let mut rmr = rdma.request_remote_mr(layout).await?;
@@ -177,7 +177,6 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!("Debug: Client about to write {:?}", file);
         println!();
 
-        let _num = lmr.as_mut_slice().write_csv_record(&file)?;
         rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
@@ -260,7 +259,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
         let size_selected = size_selected.trim().to_string();
 
         if valid_size(&size_selected) {
-            size = &size_selected;
+            size = size_selected;
             break;
         } else {
             println!("Invalid size option: {:?}", size_selected);
@@ -285,7 +284,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
             }
             "write" => {
                 let addr = "192.168.100.52:41000";
-                client_rdma(addr, rdma_type, size).await.map_err(|err| println!("{}", err)).unwrap();
+                client_rdma(addr, rdma_type, &size).await.map_err(|err| println!("{}", err)).unwrap();
                 break;
             }
             "atomic" => {
