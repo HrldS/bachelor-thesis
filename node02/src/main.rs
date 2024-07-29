@@ -14,8 +14,6 @@ use std::{
 };
 
 async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
-    println!("first line");
-
     let mut data_buffer = Vec::new();
     stream.read_to_end(&mut data_buffer).await?;  // Write the data from the stream into the data_buffer
 
@@ -25,6 +23,8 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
     stream.write_all(&processed_data).await?; // Send the processed message bytes back to client
     stream.flush().await?; // Ensure that the entire message is sent
     stream.shutdown().await?;
+    println!("send");
+    
     Ok(())
 }
 
@@ -51,9 +51,7 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
     let mut rmr_response = rdma.request_remote_mr(layout).await?;
 
     let _num = lmr_response.as_mut_slice().copy_from_slice(&processed_data);
-    println!("lmr written");
     rdma.write(&lmr_response, &mut rmr_response).await?;
-    println!("rmda written");
 
     rdma.send_remote_mr(rmr_response).await?;
     println!("send");

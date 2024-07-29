@@ -153,11 +153,10 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     writer.flush().await?;
 
     writer.shutdown().await?;
-    println!("past shutdown of writer");
 
     let mut server_response = Vec::new();
     reader.read_to_end(&mut server_response).await?;
-    println!("Called");
+
     let response_str = String::from_utf8_lossy(&server_response);
     println!("Received the following response form the server: {}", response_str);
     let elapsed_time = start_time.elapsed();
