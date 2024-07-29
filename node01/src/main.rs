@@ -103,7 +103,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
 
     if rdma_type == "write" {
 
-        let layout = Layout::from_value(&file_size);
+        let layout = Layout::for_value(&file_size);
 
         let mut lmr = rdma.alloc_local_mr(layout)?;
         let mut rmr = rdma.request_remote_mr(layout).await?;
