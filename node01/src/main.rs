@@ -165,8 +165,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         }
     };
 
-    let file = File::open(&file_path)?;  //? try reading file
-    let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
+    let mut file = File::open(&file_path)?;  //? try reading file
 
     if rdma_type == "write" {
         let layout = Layout::for_value(&file);
