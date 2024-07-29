@@ -116,6 +116,13 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
+
+    //server response
+
+        let mut server_response = rdma.receive_local_mr().await?;
+        let lmr_contents = lmr.as_slice().to_vec();
+
+        println!("Contents of lmr_contents as string: {:?}", String::from_utf8_lossy(&lmr_contents));
     } else {
         println!("not write");
     }
