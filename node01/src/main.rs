@@ -2,7 +2,7 @@ extern crate csv;
 
 use csv::{StringRecord, ReaderBuilder};
 use std::error::Error;
-use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
+use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder};
 use portpicker::pick_unused_port;
 use std::{
     fs::File,
@@ -169,15 +169,15 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
     let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     if rdma_type == "write" {
-        let layout = Layout::for_value(&line);
+        let layout = Layout::for_value(file);
 
         let mut lmr = rdma.alloc_local_mr(layout)?;
         let mut rmr = rdma.request_remote_mr(layout).await?;
                 
-        println!("Debug: Client about to write {:?}", line);
+        println!("Debug: Client about to write {:?}", file);
         println!();
 
-        let _num = lmr.as_mut_slice().write_csv_record(&line)?;
+        let _num = lmr.as_mut_slice().write_csv_record(&file)?;
         rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
