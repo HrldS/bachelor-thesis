@@ -92,6 +92,35 @@ fn valid_size(size: &str) -> bool {
     matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") 
 }
 
+fn message_size_info() {
+    println!("Please select one of these message sizes:");
+    println!("1: 100kb size");
+    println!("2: 200kb size");
+    println!("3: 500kb size");
+    println!("4: 1MB size");
+    println!("5: 2MB size");
+    println!("6: 3.5MB size");
+    println!("7: 4.5MB size");
+    println!("8: 5.5MB size");
+    println!("9: 6MB size");
+    println!("10: 7MB size");
+    println!("11: 8MB size");
+    println!("12: 8.5MB size");
+    println!("13: 9MB size");
+    println!("14: 9.5MB size");
+    println!("15: 10.5MB size");
+    println!("16: 11.5MB size");
+    println!("17: 12MB size");
+    println!("18: 13MB size");
+    println!("19: 14MB size");
+    println!("20: 15MB size");
+    println!("21: 16MB size");
+    println!("22: 17MB size");
+    println!("23: 18MB size");
+    println!("24: 19MB size");
+    println!("25: 20MB size");
+}
+
 async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
     let file_path = match size {
         "1" => "src/data/test_data_100kb.csv",
@@ -125,31 +154,29 @@ async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
     Ok(file_path.to_string())
 }
 
-async fn client_rdma(addr: SocketAddrV4, rdma_type: &str) -> io::Result<()> {
-    let rdma = Rdma::connect(addr, 1, 1, 512).await?;
+async fn client_rdma(addr: &str, rdma_type: &str) -> io::Result<()> {
+    let rdma = RdmaBuilder::default().connect(addr).await?;
+
+    message_size_info();
 
     let file = File::open("src/data/test_data.csv")?;  //? try reading file
     let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
-    for line in contant.records() {
-        let line = line?;
+    if rdma_type == "write" {
+        let layout = Layout::for_value(&line);
 
-        if rdma_type == "write" {
-            let layout = Layout::for_value(&line);
-
-            let mut lmr = rdma.alloc_local_mr(layout)?;
-            let mut rmr = rdma.request_remote_mr(layout).await?;
+        let mut lmr = rdma.alloc_local_mr(layout)?;
+        let mut rmr = rdma.request_remote_mr(layout).await?;
                 
-            println!("Debug: Client about to write {:?}", line);
-            println!();
+        println!("Debug: Client about to write {:?}", line);
+        println!();
 
-            let _num = lmr.as_mut_slice().write_csv_record(&line)?;
-            rdma.write(&lmr, &mut rmr).await?;
+        let _num = lmr.as_mut_slice().write_csv_record(&line)?;
+        rdma.write(&lmr, &mut rmr).await?;
 
-            rdma.send_remote_mr(rmr).await?;
-        } else {
-            println!("not write");
-        }
+        rdma.send_remote_mr(rmr).await?;
+    } else {
+        println!("not write");
     }
     
     Ok(())
@@ -190,49 +217,10 @@ async fn client_tcp(size: &str) -> io::Result<()> {
     Ok(())
 }
 
-#[tokio::main]
-async fn server(addr: SocketAddrV4) -> io::Result<()> {
-    let rdma_listener = RdmaListener::bind(addr).await?;
-    let rdma = rdma_listener.accept(1, 1, 512).await?;
-    // run here after client connect
-    let lmr = rdma.receive_local_mr().await?;
-
-    println!("Debug Server: {:?}", lmr.as_slice());
-    println!();
-
-    let lmr_contant = lmr.as_slice().read_line()?; 
-    println!("Server received: {:?}", lmr_contant);
-    Ok(())
-}
-
 async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
     loop {
-        println!("Please select one of these message sizes:");
-        println!("1: 100kb size");
-        println!("2: 200kb size");
-        println!("3: 500kb size");
-        println!("4: 1MB size");
-        println!("5: 2MB size");
-        println!("6: 3.5MB size");
-        println!("7: 4.5MB size");
-        println!("8: 5.5MB size");
-        println!("9: 6MB size");
-        println!("10: 7MB size");
-        println!("11: 8MB size");
-        println!("12: 8.5MB size");
-        println!("13: 9MB size");
-        println!("14: 9.5MB size");
-        println!("15: 10.5MB size");
-        println!("16: 11.5MB size");
-        println!("17: 12MB size");
-        println!("18: 13MB size");
-        println!("19: 14MB size");
-        println!("20: 15MB size");
-        println!("21: 16MB size");
-        println!("22: 17MB size");
-        println!("23: 18MB size");
-        println!("24: 19MB size");
-        println!("25: 20MB size");
+        
+        message_size_info();
 
         let mut size_selected = String::new();
         io::stdin().read_line(&mut size_selected)?;
@@ -277,9 +265,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
                 break;
             }
             "write" => {
-                let addr = std::net::SocketAddrV4::new(std::net::Ipv4Addr::new(192, 168, 100, 51), pick_unused_port().unwrap());
-                std::thread::spawn(move || server(addr));
-                tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+                let addr = "192.168.100.52:41000";
                 client_rdma(addr, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
                 break;
             }

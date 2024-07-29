@@ -101,7 +101,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ()
     } else if server_type == "rdma" {
         tokio::spawn(async move {
-            println!("inside tokyo spawn");
             if let Err(err) = rdma_handle_client("192.168.100.52:41000".to_string()).await {
                 eprintln!("Error handling client: {}", err); 
             }
