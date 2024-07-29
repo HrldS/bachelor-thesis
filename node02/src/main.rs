@@ -85,7 +85,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
             });
         }   
         ()
-    }
-    println!("The Transportation protocol: {:?} choosen!", server_type);
+    } else if server_type == "rdma" {
+        println!("The Transportation protocol: {:?} choosen!", server_type);
+    }  
     Ok(())
 }
