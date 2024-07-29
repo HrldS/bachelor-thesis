@@ -7,7 +7,7 @@ use portpicker::pick_unused_port;
 use std::{
     fs::File,
     alloc::Layout,
-    io::{self, Error as IOError, ErrorKind, Write},
+    io::{self, Error as IOError, ErrorKind, Write,Read},
     net::SocketAddrV4,
     time::{Instant, Duration},
 };
@@ -96,6 +96,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
     };
 
     let mut file = File::open(&file_path)?;  //? try reading file
+    let file_size = file.metadata()?.len() as usize;
     
     let mut file_data = Vec::with_capacity(file_size);
     file.read_to_end(&mut file_data)?;
