@@ -112,7 +112,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!();
 
         let _num = lmr.as_mut_slice().write(&file_data)?;
-        rdma.write_all(&lmr, &mut rmr).await?;
+        rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
     } else {
