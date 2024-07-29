@@ -105,7 +105,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             if let Err(err) = rdma_handle_client("192.168.100.52:41000".to_string()).await {
                 eprintln!("Error handling client: {}", err); 
             }
-        });
+        }).await?;
     }  
     Ok(())
 }
