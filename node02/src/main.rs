@@ -34,7 +34,13 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
 
     let lmr_contents = lmr.as_slice().to_vec();
 
-    let processed_data = process_data(lmr_contents);
+    let processed_data = match process_data(lmr_contents) {
+        Ok(data) => data,
+        Err(e) => {
+            eprintln!("Error processing data: {}", e);
+            return Err(e.into());
+        }
+    };
 
     println!("Data processed");
 
@@ -44,7 +50,7 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
     let mut lmr_response = rdma.alloc_local_mr(layout)?;
     let mut rmr_response = rdma.request_remote_mr(layout).await?;
 
-    let _num = lmr_response.as_mut_slice().write(&processed_data)?;
+    let _num = lmr_response.as_mut_slice().copy_from_slice(&processed_data);
 
     rdma.write(&lmr_response, &mut rmr_response).await?;
 
