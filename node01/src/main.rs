@@ -108,7 +108,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let mut lmr = rdma.alloc_local_mr(layout)?;
         let mut rmr = rdma.request_remote_mr(layout).await?;
 
-        println!("Debug: Client about to write {:?}", file);
+        println!("Debug: Client about to write {:?}", file_data);
         println!();
 
         rdma.write(&lmr, &mut rmr).await?;
