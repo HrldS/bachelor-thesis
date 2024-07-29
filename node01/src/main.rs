@@ -103,19 +103,13 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
 
     if rdma_type == "write" {
 
-        let layout = Layout::from_size_align(file_size, std::mem::align_of::<u8>())?;
-
         let mut lmr = rdma.alloc_local_mr(layout)?;
         let mut rmr = rdma.request_remote_mr(layout).await?;
 
         println!("Debug: Client about to write {:?}", file_data);
         println!();
 
-        unsafe {
-            let lmr_slice = std::slice::from_raw_parts_mut(lmr.as_ptr() as *mut u8, file_size);
-            lmr_slice.copy_from_slice(&file_data);
-        }
-
+        let _num = lmr.as_mut_slice().write(&file_data)?;
         rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
