@@ -8,10 +8,10 @@ use csv::{Writer,ReaderBuilder};
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder};
 use std::io;
 
-async fn rdma_handle_client(String: addr) -> Result<(), Box<dyn std::error::Error>> {
+async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     //let rdma_listener = RdmaListener::bind(addr).await?;
     // Handle the RDMA client connection here
-    let rdma = RdmaBuilder::default().listen(addr).await?;
+    let rdma = RdmaBuilder::default().listen(&addr).await?;
     let lmr = rdma.receive_local_mr().await?;
 
     println!("Debug Server: {:?}", lmr.as_slice());
