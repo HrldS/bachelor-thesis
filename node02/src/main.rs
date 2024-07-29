@@ -5,7 +5,7 @@ use std::error::Error;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener,TcpStream};
 use csv::{Writer,ReaderBuilder};
-use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
+use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder};
 use std::io;
 
 async fn rdma_handle_client(String: addr) -> Result<(), Box<dyn std::error::Error>> {
