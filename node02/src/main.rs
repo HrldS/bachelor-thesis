@@ -5,10 +5,24 @@ use std::error::Error;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener,TcpStream};
 use csv::{Writer,ReaderBuilder};
+use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener};
 use std::io;
 
+async fn rdma_handle_client(String: addr) -> Result<(), Box<dyn std::error::Error>> {
+    //let rdma_listener = RdmaListener::bind(addr).await?;
+    // Handle the RDMA client connection here
+    let rdma = RdmaBuilder::default().listen(addr).await?
+    let lmr = rdma.receive_local_mr().await?;
 
-async fn handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
+    println!("Debug Server: {:?}", lmr.as_slice());
+    println!();
+
+    let lmr_contant = lmr.as_slice()?; 
+    println!("Server received: {:?}", lmr_contant);
+    Ok(())
+}
+
+async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     println!("first line");
 
     let mut data_buffer = Vec::new();
@@ -79,14 +93,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
             // Spawn a new tokio task to handle each client
             tokio::spawn(async move {
                 println!("inside tokyo spawn");
-                if let Err(err) = handle_client(stream).await {
+                if let Err(err) = tcp_handle_client(stream).await {
                     eprintln!("Error handling client: {}", err); 
                 }
             });
         }   
         ()
     } else if server_type == "rdma" {
-        println!("The Transportation protocol: {:?} choosen!", server_type);
+        tokio::spawn(async move {
+            println!("inside tokyo spawn");
+            if let Err(err) = rdma_handle_client("192.168.100.52:41000").await {
+                eprintln!("Error handling client: {}", err); 
+            }
+        });
     }  
     Ok(())
 }
