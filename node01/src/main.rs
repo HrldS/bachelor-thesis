@@ -17,76 +17,6 @@ use tokio::{
     net::TcpStream,
 };
 
-
-trait WriteLine {
-    fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize>;
-}
-
-trait ReadLine {
-    fn read_line(&self) -> io::Result<StringRecord>;
-}
-
-impl ReadLine for [u8] {
-    fn read_line(&self) -> io::Result<StringRecord> {
-        // Convert bytes back to a string
-        let line_str = match std::str::from_utf8(self) {
-            Ok(s) => s,
-            Err(e) => return Err(IOError::new(ErrorKind::InvalidData, e)),
-        };
-        
-        println!("Debug ReadLine: {:?}", line_str);
-        println!();
-        //Parse the string into a CSV record
-        let mut reader = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(line_str.as_bytes());
-        
-        if let Some(result) = reader.records().next() {
-            result.map_err(|e| IOError::new(ErrorKind::InvalidData, e))
-        } else {
-            Err(IOError::new(ErrorKind::UnexpectedEof, "No CSV record found"))
-        }
-    }
-}
-
-impl WriteLine for [u8] {
-    fn write_csv_record(&mut self, line: &StringRecord) -> io::Result<usize> {
-        let mut this = self;
-        let line_str = line.iter().collect::<Vec<_>>().join(";"); // Convert the line to a semicolon-separated string
-
-        println!("Debug WriteLine as String: {:?}", line_str);
-        println!();
-
-        let bytes = line_str.as_bytes(); // Convert the string to bytes
-
-        println!("Debug WriteLine as Bytes: {:?}", bytes);
-        println!();
-
-        this.write(bytes) // Write the bytes to the memory region
-    }
-}
-
-fn read_file() -> Result<Vec<(String, i32, i32, i32)>, Box<dyn Error>>{
-    let file = File::open("src/data/test_data.csv")?;  //? try reading file
-    let mut contant = ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
-
-    let mut records = Vec::new();
-    for line in contant.records() {
-        let record = line?;
-
-        if record.len() != 4 {
-            println!("Record length:{:?}",record.len());
-            return Err("Incorrect number of fields in record".into());
-        }
-
-        let name = record[0].to_string();
-        let a: i32 = record[1].parse()?;
-        let b: i32 = record[2].parse()?;
-        let c: i32 = record[3].parse()?;
-
-        records.push((name, a, b, c));
-    }
-    Ok(records)
-}
-
 fn valid_size(size: &str) -> bool {
     println!("valid_size");
     matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") 
@@ -275,10 +205,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
 
         match rdma_type {
             "send" => {
-                let data = read_file()?;
-                for tupel in data {
-                    println!("{:?}", tupel);
-                }
+                println!("{:?}", rdma_type);
                 break;
             }
             "write" => {
