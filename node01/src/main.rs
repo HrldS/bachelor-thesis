@@ -112,13 +112,9 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!();
 
         //let _num = lmr.as_mut_slice().write(&file_data)?;
-        let mut total_written = 0;
-        while total_written < file_size {
-            let bytes_written = lmr.as_mut_slice()[total_written..]
-                .write(&file_data[total_written..])?;
-            total_written += bytes_written;
-        }
-        
+        let lmr_slice = lmr.as_mut_slice();
+        lmr_slice[..file_size].copy_from_slice(&file_data[..file_size]);
+
         rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
