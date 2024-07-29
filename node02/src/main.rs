@@ -8,18 +8,6 @@ use csv::{Writer,ReaderBuilder};
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder};
 use std::io;
 
-async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
-    let rdma = RdmaBuilder::default().listen(&addr).await?;
-    let lmr = rdma.receive_local_mr().await?;
-
-    let processed_data = process_data(lmr);
-    println!("Data processed");
-
-    let lmr_contant = lmr.as_slice(); 
-    println!("Server received: {:?}", lmr_contant);
-    Ok(())
-}
-
 async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     println!("first line");
 
@@ -32,6 +20,20 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
     stream.write_all(&processed_data).await?; // Send the processed message bytes back to client
     stream.flush().await?; // Ensure that the entire message is sent
     stream.shutdown().await?;
+    Ok(())
+}
+
+async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
+    let rdma = RdmaBuilder::default().listen(&addr).await?;
+    let mut lmr = rdma.receive_local_mr().await?;
+
+    let lmr_contents = lmr.as_slice().to_vec();
+
+    let processed_data = process_data(lmr_contents);
+    println!("Data processed");
+
+    let lmr_contant = lmr.as_slice(); 
+    println!("Server received: {:?}", lmr_contant);
     Ok(())
 }
 
