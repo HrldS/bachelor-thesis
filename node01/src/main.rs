@@ -111,11 +111,13 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!("Debug: Client about to write {:?}", file_data);
         println!();
 
+        { 
         //let _num = lmr.as_mut_slice().write(&file_data)?;
-        let mut lmr_slice = lmr.as_mut_slice();
-        lmr_slice[..file_size].copy_from_slice(&file_data[..file_size]);
+            let mut lmr_slice = lmr.as_mut_slice();
+            lmr_slice[..file_size].copy_from_slice(&file_data[..file_size]);
+        }
 
-        rdma.write(&mut lmr, &mut rmr).await?;
+        rdma.write(&lmr, &mut rmr).await?;
 
         rdma.send_remote_mr(rmr).await?;
     } else {
