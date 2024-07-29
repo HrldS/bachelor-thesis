@@ -108,9 +108,6 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let mut lmr = rdma.alloc_local_mr(layout)?;
         let mut rmr = rdma.request_remote_mr(layout).await?;
 
-        println!("Debug: Client about to write {:?}", file_data);
-        println!();
-
         let _num = lmr.as_mut_slice().write(&file_data)?;
 
         rdma.write(&lmr, &mut rmr).await?;
@@ -120,7 +117,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
     //server response
 
         let mut server_response = rdma.receive_local_mr().await?;
-        let lmr_contents = lmr.as_slice().to_vec();
+        let lmr_contents = server_response.as_slice().to_vec();
 
         println!("Contents of lmr_contents as string: {:?}", String::from_utf8_lossy(&lmr_contents));
     } else {
