@@ -8,7 +8,7 @@ use csv::{Writer,ReaderBuilder};
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder};
 use std::{
     alloc::Layout,
-    io,
+    io::{Write},
     time::{Instant, Duration},
 };
 
@@ -38,7 +38,7 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
     println!("Data processed");
 
 //send back
-    let layout = Layout::from_size_align(processed_data.len(), std::mem::align_of::<u8>()).expect("Failed to create layout");
+    let layout = Layout::from_size_align(processed_data?.len(), std::mem::align_of::<u8>()).expect("Failed to create layout");
 
     let mut lmr_response = rdma.alloc_local_mr(layout)?;
     let mut rmr_response = rdma.request_remote_mr(layout).await?;
