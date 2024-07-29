@@ -96,17 +96,18 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
     };
 
     let mut file = File::open(&file_path)?;  //? try reading file
-    let file_size = file.metadata()?.len() as usize;
     
     let mut file_data = Vec::with_capacity(file_size);
     file.read_to_end(&mut file_data)?;
 
     if rdma_type == "write" {
 
-        let mut lmr = rdma.alloc_local_mr(file_data.len())?;
-        let mut rmr = rdma.request_remote_mr(file_data.len()).await?;
+        let layout = Layout::for_value(&file);
+
+        let mut lmr = rdma.alloc_local_mr(layout)?;
+        let mut rmr = rdma.request_remote_mr(layout).await?;
         
-        lmr.as_slice_mut().copy_from_slice(&file_data);
+        unsafe { *(*lmr.as_mut_ptr() as *mut Data) = Data("hello world".to_string()) };
 
         println!("Debug: Client about to write {:?}", file);
         println!();
