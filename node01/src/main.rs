@@ -154,12 +154,18 @@ async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
     Ok(file_path.to_string())
 }
 
-async fn client_rdma(addr: &str, rdma_type: &str) -> io::Result<()> {
+async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> {
     let rdma = RdmaBuilder::default().connect(addr).await?;
 
-    message_size_info();
+    let file_path = match data_path(size).await {
+        Ok(data) => data,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return Ok(()); 
+        }
+    };
 
-    let file = File::open("src/data/test_data.csv")?;  //? try reading file
+    let file = File::open(&file_path)?;  //? try reading file
     let mut contant = csv::ReaderBuilder::new().has_headers(false).delimiter(b';').from_reader(file); // Disable headers assumption to not skip first row
 
     if rdma_type == "write" {
@@ -178,7 +184,7 @@ async fn client_rdma(addr: &str, rdma_type: &str) -> io::Result<()> {
     } else {
         println!("not write");
     }
-    
+
     Ok(())
 }
 
@@ -221,7 +227,6 @@ async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
     loop {
         
         message_size_info();
-
         let mut size_selected = String::new();
         io::stdin().read_line(&mut size_selected)?;
         let size_selected = size_selected.trim().to_string();
@@ -247,6 +252,20 @@ async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
 }
 
 async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
+    let mut size = String::new();
+    loop {
+        message_size_info();
+        let mut size_selected = String::new();
+        io::stdin().read_line(&mut size_selected)?;
+        let size_selected = size_selected.trim().to_string();
+
+        if valid_size(&size_selected) {
+            size = &size_selected;
+            break;
+        } else {
+            println!("Invalid size option: {:?}", size_selected);
+        }
+    }
     loop {
         println!("Please choose which RDMA transmission Type you want to use:");
         println!("send, write or atomic");
@@ -266,7 +285,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
             }
             "write" => {
                 let addr = "192.168.100.52:41000";
-                client_rdma(addr, rdma_type).await.map_err(|err| println!("{}", err)).unwrap();
+                client_rdma(addr, rdma_type, size).await.map_err(|err| println!("{}", err)).unwrap();
                 break;
             }
             "atomic" => {
