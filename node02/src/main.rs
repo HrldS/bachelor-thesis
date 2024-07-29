@@ -12,8 +12,8 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
     let rdma = RdmaBuilder::default().listen(&addr).await?;
     let lmr = rdma.receive_local_mr().await?;
 
-    println!("Debug Server: {:?}", lmr.as_slice());
-    println!();
+    let processed_data = process_data(lmr);
+    println!("Data processed");
 
     let lmr_contant = lmr.as_slice(); 
     println!("Server received: {:?}", lmr_contant);
@@ -25,10 +25,9 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 
     let mut data_buffer = Vec::new();
     stream.read_to_end(&mut data_buffer).await?;  // Write the data from the stream into the data_buffer
-    println!("after read_to_end");
 
     let processed_data = process_data(data_buffer)?;  // Process the data
-    println!("Called");
+    println!("Data Processed");
 
     stream.write_all(&processed_data).await?; // Send the processed message bytes back to client
     stream.flush().await?; // Ensure that the entire message is sent
