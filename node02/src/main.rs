@@ -6,7 +6,11 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener,TcpStream};
 use csv::{Writer,ReaderBuilder};
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder};
-use std::io;
+use std::{
+    alloc::Layout,
+    io,
+    time::{Instant, Duration},
+};
 
 async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
     println!("first line");
@@ -41,9 +45,9 @@ async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Erro
 
     let _num = lmr_response.as_mut_slice().write(&processed_data)?;
 
-    rdma.write(&lmr, &mut rmr).await?;
+    rdma.write(&lmr_response, &mut rmr_response).await?;
 
-    rdma.send_remote_mr(rmr).await?;
+    rdma.send_remote_mr(rmr_response).await?;
 
     Ok(())
 }
