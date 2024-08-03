@@ -35,16 +35,19 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let data_size = message.length();
 
     println!("Received data: {} bytes", data_size);
+    
+    let layout = Layout::from_size_align(data_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
+    let mut lmr = rdma.alloc_local_mr(layout)?;
 
-    let mut buffer = vec![0u8; data_size];
-
-    rdma.read(&mut buffer, &message).await?;
+    rdma.read(&mut lmr, &message).await?;
     //let message_contents = message.as_slice().to_vec()ss;     
 
    // let message_contents = lmr.as_sclice().to_vec();
     
     println!("Received data: {} bytes", data_size);
-     
+
+    let message_contents = lmr.as_slice().to_vec();
+
     println!("rdy for process");
     let processed_data = match process_data(buffer) {  
         Ok(data) => data,
