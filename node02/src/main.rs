@@ -10,7 +10,6 @@ use std::{
     alloc::Layout,
     io::{Write},
     io,
-    time::{Instant, Duration},
 };
 
 async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> {
@@ -74,7 +73,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
 async fn rdma_write_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(&addr).await?;
-    let mut lmr = rdma.receive_local_mr().await?;
+    let lmr = rdma.receive_local_mr().await?; //mut
 
     let lmr_contents = lmr.as_slice().to_vec();
 
