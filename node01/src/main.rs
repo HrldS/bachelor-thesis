@@ -155,7 +155,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
             ptr::copy_nonoverlapping(file_data.as_ptr(), *lmr_ptr, file_size);
         }
 
-        println!("Received data: {} bytes", &lmr.len());
+        println!("Received data: {} bytes", lmr.len());
         rdma.send(&lmr).await?;
 
         // server response
