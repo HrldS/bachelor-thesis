@@ -31,9 +31,11 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(&addr).await?;
 
-    let message = rdma.receive().await?;
+    let message = rdma.receive_local_mr().await?;
     let message_contents = message.as_slice().to_vec();
+
     println!("Received data: {} bytes", message_contents.len());
+
     println!("rdy for process");
     let processed_data = match process_data(message_contents) {
         Ok(data) => data,
