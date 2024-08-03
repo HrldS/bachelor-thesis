@@ -29,7 +29,10 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 }
 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
-    let rdma = RdmaBuilder::default().set_max_message_length(21 * 1048576).listen(&addr).await?;
+    let rdma = RdmaBuilder::default().listen(&addr).await?;
+
+    let layout = Layout::from_size_align(102400, std::mem::align_of::<u8>())?;
+    let mut data_mr = rdma.alloc_local_mr(layout)?;
 
     let message = rdma.receive().await?;
     let message_contents = message.as_slice().to_vec();
