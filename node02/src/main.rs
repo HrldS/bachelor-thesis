@@ -30,8 +30,7 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma_listener = RdmaListener::bind(addr).await?;
-    let size = 100;
-    let rdma = rdma_listener.accept(1, 1,size).await?;
+    let rdma = rdma_listener.accept(1, 1, 100).await?;
 
     let message = rdma.receive().await?;
     let message_contents = message.as_slice().to_vec();
