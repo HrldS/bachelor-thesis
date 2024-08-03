@@ -65,7 +65,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     let _num = lmr.as_mut_slice().write(&processed_data)?;
 
-    rdma.send(&lmr).await?;
+    rdma.send_local_mr(lmr).await?;
 
     println!("works");
     
