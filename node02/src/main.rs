@@ -28,6 +28,11 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
     Ok(())
 }
 
+async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
+    println!("works");
+}
+
+
 async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(&addr).await?;
     let mut lmr = rdma.receive_local_mr().await?;
@@ -88,14 +93,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut server_type = String::new();
     loop {
         let mut input = String::new();
-        println!("Please select one of these Transportation protocol types: rdma or tcp");
+        println!("Please select one of these Transportation protocol types: rdma_write, rdma_send or tcp");
         io::stdin().read_line(&mut input).expect("failed to read server_type");
 
         server_type = input.trim().to_string();
     
-        if server_type == "rdma" {
+        if server_type == "rdma_write" {
             break;
         } else if server_type == "tcp" {
+            break;
+        } else if server_type == "rdma_send" {
             break;
         } else {
             println!("The Transportation protocol: {:?} is not supported", server_type);
@@ -120,12 +127,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
             });
         }   
         ()
-    } else if server_type == "rdma" {
+    } else if server_type == "rdma_write" {
         tokio::spawn(async move {
             if let Err(err) = rdma_handle_client("192.168.100.52:41000".to_string()).await {
                 eprintln!("Error handling client: {}", err); 
             }
         }).await?;
-    }  
+    } else {
+        tokio::spawn(async move {
+            if let Err(err) = rdma_send_handle_client("192.168.100.52:41000".to_string()).await {
+                eprintln!("Error handling client: {}", err); 
+            }
+        }).await?;
+    }
     Ok(())
 }
