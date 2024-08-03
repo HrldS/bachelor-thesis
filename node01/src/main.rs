@@ -113,7 +113,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
 
     //server response
 
-        let mut server_response = rdma.receive_local_mr().await?;
+        let server_response = rdma.receive_local_mr().await?;  //mut
         let lmr_contents = server_response.as_slice().to_vec();
 
         println!("Contents of lmr_contents as string: {:?}", String::from_utf8_lossy(&lmr_contents));
