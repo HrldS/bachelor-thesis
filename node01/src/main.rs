@@ -162,7 +162,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
     
         rdma.read(&mut lmr, &server_response).await?;
 
-        let response_contents = server_response.as_slice().to_vec();
+        let response_contents = lmr.as_slice().to_vec();
 
         println!("Contents of response_contents as string: {:?}", String::from_utf8_lossy(&response_contents));
         let elapsed_time = start_time.elapsed();
