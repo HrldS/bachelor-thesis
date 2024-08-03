@@ -49,7 +49,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let message_contents = lmr.as_slice().to_vec();
 
     println!("rdy for process");
-    let processed_data = match process_data(buffer) {  
+    let processed_data = match process_data(message_contents) {  
         Ok(data) => data,
         Err(e) => {
             eprintln!("Error processing data: {}", e);
