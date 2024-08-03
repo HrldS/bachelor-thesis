@@ -5,7 +5,7 @@ use std::error::Error;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener,TcpStream};
 use csv::{Writer,ReaderBuilder};
-use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder, MrAccess, RemoteMr};
+use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder, MrAccess, RemoteMr, RemoteMrWriteAccess, LocalMrReadAccess};
 use std::{
     alloc::Layout,
     io::{Write},
@@ -39,7 +39,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
      
     //println!("Received data: {} bytes", message_contents.len());
 
-    rdma.write(&message_contents, &mut buffer).await?;
+    rdma.write(&message_contents, &mut buffer);
 
     println!("rdy for process");
     let processed_data = match process_data(message_contents) {  
