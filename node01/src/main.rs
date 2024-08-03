@@ -125,7 +125,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!("Time needed: {:?} ms", elapsed_time.as_millis());
 
     } else if rdma_type == "send" {
-        
+
         let start_time = Instant::now();
         let rdma = RdmaBuilder::default().connect(addr).await?;
 
@@ -152,10 +152,10 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         rdma.send(&lmr).await?;
 
         // server response
-        let mut server_response = rdma.receive_local_mr().await?;
-        let lmr_contents = server_response.as_slice().to_vec();
+        let server_response = rdma.receive().await?;
+        let response_contents = server_response.as_slice().to_vec();
 
-        println!("Contents of lmr_contents as string: {:?}", String::from_utf8_lossy(&lmr_contents));
+        println!("Contents of response_contents as string: {:?}", String::from_utf8_lossy(&response_contents));
         let elapsed_time = start_time.elapsed();
         println!("Time needed: {:?} ms", elapsed_time.as_millis());
         
