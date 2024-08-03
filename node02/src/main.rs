@@ -28,9 +28,9 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
     Ok(())
 }
 
-async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
+async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> { //addr: String
     let rdma = RdmaBuilder::default().listen(addr).await?;
-
+    
     let message = rdma.receive_remote_mr().await?;
     let data_size = message.length();
 
@@ -72,7 +72,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     Ok(())
 }
 
-async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
+async fn rdma_write_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(&addr).await?;
     let mut lmr = rdma.receive_local_mr().await?;
 
@@ -137,16 +137,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         server_type = input.trim().to_string();
     
-        if server_type == "rdma_write" {
-            break;
-        } else if server_type == "tcp" {
-            break;
-        } else if server_type == "rdma_send" {
+        if server_type == "rdma_write" || server_type == "tcp" || server_type == "rdma_send" {
             break;
         } else {
             println!("The Transportation protocol: {:?} is not supported", server_type);
         }
-    
     }
         
     if server_type == "tcp" {
@@ -159,7 +154,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                     
             // Spawn a new tokio task to handle each client
             tokio::spawn(async move {
-                println!("inside tokyo spawn");
                 if let Err(err) = tcp_handle_client(stream).await {
                     eprintln!("Error handling client: {}", err); 
                 }
@@ -168,7 +162,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         ()
     } else if server_type == "rdma_write" {
         tokio::spawn(async move {
-            if let Err(err) = rdma_handle_client("192.168.100.52:41000".to_string()).await {
+            if let Err(err) = rdma_write_handle_client("192.168.100.52:41000".to_string()).await {
                 eprintln!("Error handling client: {}", err); 
             }
         }).await?;

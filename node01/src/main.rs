@@ -3,7 +3,6 @@ extern crate csv;
 use csv::{StringRecord, ReaderBuilder};
 use std::error::Error;
 use async_rdma::{LocalMrReadAccess, LocalMrWriteAccess, Rdma, RdmaListener, RdmaBuilder, MrAccess};
-use portpicker::pick_unused_port;
 use std::{
     fs::File,
     alloc::Layout,
@@ -16,10 +15,8 @@ use tokio::{
     io::{AsyncWriteExt,AsyncReadExt, AsyncBufReadExt, BufReader},
     net::TcpStream,
 };
-use std::ptr;
 
 fn valid_size(size: &str) -> bool {
-    println!("valid_size");
     matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") 
 }
 
@@ -262,18 +259,9 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
         let rdma_type = rdma_type.trim();
 
         match rdma_type {
-            "send" => {
+            "send" | "write" | "atomic" => {
                 let addr = "192.168.100.52:41000";
                 client_rdma(addr, rdma_type, &size).await.map_err(|err| println!("{}", err)).unwrap();
-                break;
-            }
-            "write" => {
-                let addr = "192.168.100.52:41000";
-                client_rdma(addr, rdma_type, &size).await.map_err(|err| println!("{}", err)).unwrap();
-                break;
-            }
-            "atomic" => {
-                println!("{:?}", rdma_type);
                 break;
             }
             _ => {
