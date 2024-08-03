@@ -30,27 +30,14 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(addr).await?;
-    /* 
+ 
     let message = rdma.receive().await?;
     let message_contents = message.as_slice().to_vec();
-    */
 
-    let remote_mr = rdma.receive_remote_mr().await?;
-    
-    // Determine the size of the data you expect
-    let data_size = remote_mr.length();
-    println!("Data size to receive: {} bytes", data_size);
-
-    // Allocate a buffer to hold the received data
-    let mut buffer = vec![0u8; data_size];
-
-    // Use the RDMA method to read data from the remote MR into the local buffer
-    rdma.read_remote_mr(&remote_mr, &mut buffer).await?;
-
-    println!("Received data: {} bytes", buffer.len());
+    println!("Received data: {} bytes", message_contents.len());
 
     println!("rdy for process");
-    let processed_data = match process_data(buffer) {  //message_contents
+    let processed_data = match process_data(message_contents) {  
         Ok(data) => data,
         Err(e) => {
             eprintln!("Error processing data: {}", e);
