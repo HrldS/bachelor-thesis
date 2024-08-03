@@ -29,6 +29,29 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 }
 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
+    let rdma = RdmaBuilder::default().listen(&addr).await?;
+
+    let message = rdma.receive().await?;
+    let message_contents = message.as_slice().to_vec();
+
+    let processed_data = match process_data(message_contents) {
+        Ok(data) => data,
+        Err(e) => {
+            eprintln!("Error processing data: {}", e);
+            return Err(e.into());
+        }
+    };
+
+    println!("Data processed");
+
+    let layout = Layout::from_size_align(processed_data.len(), std::mem::align_of::<u8>()).expect("Failed to create layout");
+
+    let mut lmr = rdma.alloc_local_mr(layout)?;
+
+    let _num = lmr.as_mut_slice().write(&processed_data)?;
+
+    rdma.send(&lmr).await?;
+
     println!("works");
     Ok(())
 }
