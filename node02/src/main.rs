@@ -31,10 +31,10 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(&addr).await?;
 
-    let layout = Layout::from_size_align(21 * 1048576, std::mem::align_of::<u8>()).expect("Failed to create layout");
-    let _rdma_memory_increase = rdma.alloc_local_mr(layout);
+    //let connection = rdma.accept(1, 1, 21 * 1048576).await?;
+    let connection = rdma.set_max_message_length(21 * 1048576).await?;
 
-    let message = rdma.receive().await?;
+    let message = connection.receive().await?;
     let message_contents = message.as_slice().to_vec();
 
     println!("Received data: {} bytes", message_contents.len());
