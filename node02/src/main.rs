@@ -32,9 +32,14 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let rdma = RdmaBuilder::default().set_max_message_length(21 * 1048576).listen(addr).await?;
  
     let message = rdma.receive_remote_mr().await?;
-    let message_contents = message.get_mut().to_vec();
+    let size = message.length();
+    let message_contents = message.get_mut(size);       //.to_vec()
+    
+    let mut buffer = vec![0u8; size];
+     
+    //println!("Received data: {} bytes", message_contents.len());
 
-    println!("Received data: {} bytes", message_contents.len());
+    rdma.write(&message_contents, &mut buffer).await?;
 
     println!("rdy for process");
     let processed_data = match process_data(message_contents) {  
