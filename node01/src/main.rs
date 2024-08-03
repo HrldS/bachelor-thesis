@@ -149,11 +149,13 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let mut lmr = rdma.alloc_local_mr(layout)?;
 
         //let _num = lmr.as_mut_slice().write(&file_data)?;
-
+        /* 
         unsafe {
             let lmr_ptr = lmr.as_mut_ptr();
             ptr::copy_nonoverlapping(file_data.as_ptr(), *lmr_ptr, file_size);
         }
+        */
+        let _num = lmr.as_mut_slice().write(&processed_data)?;
 
         println!("Received data: {} bytes", lmr.length());
         rdma.send(&lmr).await?;
