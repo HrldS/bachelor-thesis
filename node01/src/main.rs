@@ -252,7 +252,8 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
 
         match rdma_type {
             "send" => {
-                println!("{:?}", rdma_type);
+                let addr = "192.168.100.52:41000";
+                client_rdma(addr, rdma_type, &size).await.map_err(|err| println!("{}", err)).unwrap();
                 break;
             }
             "write" => {
