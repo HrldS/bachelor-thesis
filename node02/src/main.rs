@@ -39,7 +39,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     rdma.read(&mut lmr, &message).await?;
 
-    message_contents = lmr.as_sclice().to_vec();
+    let message_contents = lmr.as_sclice().to_vec();
 
     println!("Received data: {} bytes", message_contents.len());
 
