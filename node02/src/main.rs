@@ -32,9 +32,8 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let rdma = RdmaBuilder::default().listen(&addr).await?;
 
     let layout = Layout::from_size_align(102400, std::mem::align_of::<u8>())?;
-    let mut data_mr = rdma.alloc_local_mr(layout)?;
 
-    let message = rdma.receive().await?;
+    let message = rdma.alloc_local_mr(layout).receive().await?;
     let message_contents = message.as_slice().to_vec();
 
     println!("Received data: {} bytes", message_contents.len());
