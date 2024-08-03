@@ -31,8 +31,8 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().set_max_message_length(21 * 1048576).listen(addr).await?;
  
-    let message = rdma.receive().await?;
-    let message_contents = message.as_slice().to_vec();
+    let message = rdma.receive_remote_mr().await?;
+    let message_contents = message.get_mut().to_vec();
 
     println!("Received data: {} bytes", message_contents.len());
 

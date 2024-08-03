@@ -151,7 +151,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let _num = lmr.as_mut_slice().write(&file_data)?;
 
         println!("Received data: {} bytes", lmr.length());
-        rdma.send(&lmr).await?;
+        rdma.send_local_mr(lmr).await?;
 
         // server response
         let server_response = rdma.receive().await?;
