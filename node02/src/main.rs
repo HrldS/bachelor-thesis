@@ -29,22 +29,16 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
 }
 
 async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
-    //let rdma = RdmaBuilder::default().listen(addr).await?;
-    let rdma_listener = RdmaListener::bind(addr).await?;
-    let rdma = rdma_listener.accept(1, 1, 21 * 1048576).await?;
+    let rdma = RdmaBuilder::default().listen(addr).await?;
 
     let message = rdma.receive_remote_mr().await?;
+    let data_size = message.length();
     //let message_contents = message.as_slice().to_vec()ss;     
+
+   // let message_contents = lmr.as_sclice().to_vec();
     
-    let layout = Layout::from_size_align(21 * 1048576, std::mem::align_of::<u8>()).expect("Failed to create layout");
-    let mut lmr = rdma.alloc_local_mr(layout);
-
-    rdma.read(&mut lmr, &message).await?;
-
-    let message_contents = lmr.as_sclice().to_vec();
-
-    println!("Received data: {} bytes", message_contents.len());
-
+    println!("Received data: {} bytes", data_size);
+    /* 
     println!("rdy for process");
     let processed_data = match process_data(message_contents) {  
         Ok(data) => data,
@@ -65,6 +59,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     rdma.send(&lmr).await?;
 
     println!("works");
+    */
     Ok(())
 }
 
