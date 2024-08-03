@@ -123,6 +123,40 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!("Contents of lmr_contents as string: {:?}", String::from_utf8_lossy(&lmr_contents));
         let elapsed_time = start_time.elapsed();
         println!("Time needed: {:?} ms", elapsed_time.as_millis());
+    } else if rdma_type == "send" {
+        let start_time = Instant::now();
+        let rdma = RdmaBuilder::default().connect(addr).await?;
+
+        let file_path = match data_path(size).await {
+            Ok(data) => data,
+            Err(e) => {
+                eprintln!("Error: {}", e);
+                return Ok(()); 
+            }
+        };
+
+        let mut file = File::open(&file_path)?;  //? try reading file
+        let file_size = file.metadata()?.len() as usize;
+        
+        let mut file_data = Vec::with_capacity(file_size);
+        file.read_to_end(&mut file_data)?;
+
+        let layout = Layout::from_size_align(file_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
+
+        let mut lmr = rdma.alloc_local_mr(layout)?;
+
+        let _num = lmr.as_mut_slice().write(&file_data)?;
+
+        rdma.send(&lmr).await?;
+
+        // server response
+        let mut server_response = rdma.receive_local_mr().await?;
+        let lmr_contents = server_response.as_slice().to_vec();
+
+        println!("Contents of lmr_contents as string: {:?}", String::from_utf8_lossy(&lmr_contents));
+        let elapsed_time = start_time.elapsed();
+        println!("Time needed: {:?} ms", elapsed_time.as_millis());
+        
     } else {
         println!("not write");
     }
