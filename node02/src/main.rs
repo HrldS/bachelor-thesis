@@ -34,7 +34,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let rdma = rdma_listener.accept(1, 1, 21 * 1048576).await?;
 
     let message = rdma.receive_remote_mr().await?;
-    //let message_contents = message.as_slice().to_vec();     
+    //let message_contents = message.as_slice().to_vec()ss;     
     
     let layout = Layout::from_size_align(21 * 1048576, std::mem::align_of::<u8>()).expect("Failed to create layout");
     let mut lmr = rdma.alloc_local_mr(layout);
