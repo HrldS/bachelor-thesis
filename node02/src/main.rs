@@ -33,14 +33,20 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     let message = rdma.receive_remote_mr().await?;
     let data_size = message.length();
+
+    println!("Received data: {} bytes", data_size);
+
+    let mut buffer = vec![0u8; data_size];
+
+    message.read(&mut buffer,&message).await?;
     //let message_contents = message.as_slice().to_vec()ss;     
 
    // let message_contents = lmr.as_sclice().to_vec();
     
     println!("Received data: {} bytes", data_size);
-    /* 
+     
     println!("rdy for process");
-    let processed_data = match process_data(message_contents) {  
+    let processed_data = match process_data(buffer) {  
         Ok(data) => data,
         Err(e) => {
             eprintln!("Error processing data: {}", e);
@@ -59,7 +65,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     rdma.send(&lmr).await?;
 
     println!("works");
-    */
+    
     Ok(())
 }
 
