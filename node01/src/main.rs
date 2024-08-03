@@ -81,7 +81,6 @@ async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
 }
 
 async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> {
-
     if rdma_type == "write" {
         let start_time = Instant::now();
         let rdma = RdmaBuilder::default().connect(addr).await?;
@@ -111,7 +110,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
 
         rdma.send_remote_mr(rmr).await?;
 
-    //server response
+        //server response
 
         let server_response = rdma.receive_local_mr().await?;  //mut
         let lmr_contents = server_response.as_slice().to_vec();
@@ -121,7 +120,6 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!("Time needed: {:?} ms", elapsed_time.as_millis());
 
     } else if rdma_type == "send" {
-
         let start_time = Instant::now();
         let rdma = RdmaBuilder::default().connect(addr).await?;
 
@@ -145,10 +143,10 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         
         let _num = lmr.as_mut_slice().write(&file_data)?;
 
-        println!("Received data: {} bytes", lmr.length());
         rdma.send_local_mr(lmr).await?;
 
         // server response
+        
         let server_response = rdma.receive_remote_mr().await?;
         let data_size = server_response.length();
 
