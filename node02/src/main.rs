@@ -33,7 +33,6 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     Ok(())
 }
 
-
 async fn rdma_handle_client(addr: String) -> Result<(), Box<dyn std::error::Error>> {
     let rdma = RdmaBuilder::default().listen(&addr).await?;
     let mut lmr = rdma.receive_local_mr().await?;
