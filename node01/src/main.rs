@@ -152,7 +152,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
 
         unsafe {
             let lmr_ptr = lmr.as_mut_ptr();
-            ptr::copy_nonoverlapping(file_data.as_ptr(), lmr_ptr, file_size);
+            ptr::copy_nonoverlapping(file_data.as_ptr(), *lmr_ptr, file_size);
         }
 
         rdma.send(&lmr).await?;
