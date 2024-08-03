@@ -35,7 +35,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     
     let layout = Layout::from_size_align(21 * 1048576, std::mem::align_of::<u8>()).expect("Failed to create layout");
 
-    let message = rdma.receive(layout).await?;
+    let message = rdma.receive().await?;
     let message_contents = message.as_slice().to_vec();
 
     println!("Received data: {} bytes", message_contents.len());
