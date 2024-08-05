@@ -17,12 +17,10 @@ async fn tcp_handle_client(mut stream: TcpStream) -> Result<(), Box<dyn Error>> 
     stream.read_to_end(&mut data_buffer).await?;  // Write the data from the stream into the data_buffer
 
     let processed_data = process_data(data_buffer)?;  // Process the data
-    println!("Data Processed");
 
     stream.write_all(&processed_data).await?; // Send the processed message bytes back to client
     stream.flush().await?; // Ensure that the entire message is sent
     stream.shutdown().await?;
-    println!("send");
     
     Ok(())
 }
@@ -32,18 +30,11 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     
     let message = rdma.receive_remote_mr().await?;
     let data_size = message.length();
-
-    println!("Received data: {} bytes", data_size);
     
     let layout = Layout::from_size_align(data_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
     let mut lmr = rdma.alloc_local_mr(layout)?;
 
     rdma.read(&mut lmr, &message).await?;
-    //let message_contents = message.as_slice().to_vec()ss;     
-
-   // let message_contents = lmr.as_sclice().to_vec();
-    
-    println!("Received data: {} bytes", data_size);
 
     let message_contents = lmr.as_slice().to_vec();
 
@@ -56,8 +47,6 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
         }
     };
 
-    println!("Data processed");
-
     let layout = Layout::from_size_align(processed_data.len(), std::mem::align_of::<u8>()).expect("Failed to create layout");
 
     let mut lmr = rdma.alloc_local_mr(layout)?;
@@ -65,8 +54,6 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let _num = lmr.as_mut_slice().write(&processed_data)?;
 
     rdma.send_local_mr(lmr).await?;
-
-    println!("works");
     
     Ok(())
 }
@@ -84,8 +71,6 @@ async fn rdma_write_handle_client(addr: String) -> Result<(), Box<dyn std::error
             return Err(e.into());
         }
     };
-
-    println!("Data processed");
 
 //send back
     let layout = Layout::from_size_align(processed_data.len(), std::mem::align_of::<u8>()).expect("Failed to create layout");
