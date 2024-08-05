@@ -38,7 +38,6 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     let message_contents = lmr.as_slice().to_vec();
 
-    println!("rdy for process");
     let processed_data = match process_data(message_contents) {  
         Ok(data) => data,
         Err(e) => {
@@ -82,7 +81,6 @@ async fn rdma_write_handle_client(addr: String) -> Result<(), Box<dyn std::error
     rdma.write(&lmr_response, &mut rmr_response).await?;
 
     rdma.send_remote_mr(rmr_response).await?;
-    println!("send");
 
     Ok(())
 }
