@@ -127,14 +127,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
         
     if server_type == "tcp" {
-        let listener = TcpListener::bind("192.168.100.52:41000").await?;        //192.168.100.52:41000
+        let listener = TcpListener::bind("192.168.100.52:41000").await?;       
         let local_addr = listener.local_addr()?;
         println!("Server listening on: {}", local_addr);
                 
         while let Ok((stream, _)) = listener.accept().await {
-            println!("New connection: {:?}", stream.peer_addr());  //print incoming client ip address
                     
-            // Spawn a new tokio task to handle each client
             tokio::spawn(async move {
                 if let Err(err) = tcp_handle_client(stream).await {
                     eprintln!("Error handling client: {}", err); 
