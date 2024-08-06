@@ -30,6 +30,8 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     
     let message = rdma.receive_remote_mr().await?;
     let data_size = message.length();
+
+    println!("Size: {}", data_size);
     
     let layout = Layout::from_size_align(data_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
     let mut lmr = rdma.alloc_local_mr(layout)?;
@@ -51,6 +53,8 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
     let mut lmr = rdma.alloc_local_mr(layout)?;
 
     let _num = lmr.as_mut_slice().write(&processed_data)?;
+
+    println!("Size: {}", lmr.length());
 
     rdma.send_local_mr(lmr).await?;
     
