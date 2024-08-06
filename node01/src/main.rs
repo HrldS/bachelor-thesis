@@ -150,19 +150,13 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let server_response = rdma.receive_remote_mr().await?;
         let data_size = server_response.length();
         println!("made it {}", data_size);
+
         let layout = Layout::from_size_align(data_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
-        let mut lmr = rdma.alloc_local_mr(layout)?;
+        let mut lmr2 = rdma.alloc_local_mr(layout)?;
     
-        match rdma.read(&mut lmr, &server_response).await {
-            Ok(_) => println!("Read operation completed successfully"),
-            Err(e) => {
-                eprintln!("Failed to read from remote MR: {}", e);
-                return Err(e.into());
-            }
-        }
-        
+        rdma.read(&mut lmr2, &server_response).await?;
         println!("made it 2");
-        let response_contents = lmr.as_slice().to_vec();
+        let response_contents = lmr2.as_slice().to_vec();
 
         println!("Contents of response_contents as string: {:?}", String::from_utf8_lossy(&response_contents));
         let elapsed_time = start_time.elapsed();
