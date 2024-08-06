@@ -231,7 +231,7 @@ async fn handle_tcp_protocol() -> Result<(), Box<dyn Error>> {
 }
 
 async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
-    let mut size = String::new();
+    let mut size;
     loop {
         message_size_info();
         let mut size_selected = String::new();
