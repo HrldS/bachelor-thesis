@@ -65,6 +65,9 @@ async fn rdma_write_handle_client(addr: String) -> Result<(), Box<dyn std::error
     let rdma = RdmaBuilder::default().listen(&addr).await?;
     let lmr = rdma.receive_local_mr().await?; //mut
 
+    let data_size = lmr.length();
+    println!("Size: {}", data_size);
+
     let lmr_contents = lmr.as_slice().to_vec();
 
     let processed_data = match process_data(lmr_contents) {
@@ -83,6 +86,8 @@ async fn rdma_write_handle_client(addr: String) -> Result<(), Box<dyn std::error
 
     let _num = lmr_response.as_mut_slice().copy_from_slice(&processed_data);
     rdma.write(&lmr_response, &mut rmr_response).await?;
+
+    println!("Size: {}", rmr_response.length());
 
     rdma.send_remote_mr(rmr_response).await?;
 
