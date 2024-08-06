@@ -153,7 +153,14 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let layout = Layout::from_size_align(data_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
         let mut lmr = rdma.alloc_local_mr(layout)?;
     
-        rdma.read(&mut lmr, &server_response).await?;
+        match rdma.read(&mut lmr, &server_response).await {
+            Ok(_) => println!("Read operation completed successfully"),
+            Err(e) => {
+                eprintln!("Failed to read from remote MR: {}", e);
+                return Err(e.into());
+            }
+        }
+        
         println!("made it 2");
         let response_contents = lmr.as_slice().to_vec();
 
