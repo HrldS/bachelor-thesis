@@ -149,7 +149,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         
         let server_response = rdma.receive_remote_mr().await?;
         let data_size = server_response.length();
-        println!("made it");
+        println!("made it {}", data_size);
         let layout = Layout::from_size_align(data_size, std::mem::align_of::<u8>()).expect("Failed to create layout");
         let mut lmr = rdma.alloc_local_mr(layout)?;
     
