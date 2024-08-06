@@ -117,7 +117,7 @@ fn process_data(data_buffer: Vec<u8>) -> Result<Vec<u8>, Box<dyn Error>> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     
-    let mut server_type = String::new();
+    let mut server_type;
     loop {
         let mut input = String::new();
         println!("Please select one of these Transportation protocol types: rdma_write, rdma_send or tcp");
