@@ -119,7 +119,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         let elapsed_time = start_time.elapsed();
         println!("Time needed: {:?} ms", elapsed_time.as_millis());
 
-    } else if rdma_type == "send" {
+    } else {
         let start_time = Instant::now();
         let rdma = RdmaBuilder::default().connect(addr).await?;
 
@@ -160,11 +160,7 @@ async fn client_rdma(addr: &str, rdma_type: &str, size: &str) -> io::Result<()> 
         println!("Contents of response_contents as string: {:?}", String::from_utf8_lossy(&response_contents));
         let elapsed_time = start_time.elapsed();
         println!("Time needed: {:?} ms", elapsed_time.as_millis());
-        
-    } else {
-        println!("not write");
     }
-
     Ok(())
 }
 
@@ -247,7 +243,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
     }
     loop {
         println!("Please choose which RDMA transmission Type you want to use:");
-        println!("send, write or atomic");
+        println!("send or write");
 
         let mut rdma_type = String::new();
         io::stdin().read_line(&mut rdma_type)?;
@@ -255,7 +251,7 @@ async fn handle_rdma_protocol() -> Result<(), Box<dyn Error>> {
         let rdma_type = rdma_type.trim();
 
         match rdma_type {
-            "send" | "write" | "atomic" => {
+            "send" | "write" => {
                 let addr = "192.168.100.52:41000";
                 client_rdma(addr, rdma_type, &size).await.map_err(|err| println!("{}", err)).unwrap();
                 break;
