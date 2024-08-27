@@ -15,7 +15,7 @@ use tokio::{
 };
 
 fn valid_size(size: &str) -> bool {
-    matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25") 
+    matches!(size, "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29") 
 }
 
 fn message_size_info() {
@@ -45,6 +45,10 @@ fn message_size_info() {
     println!("23: 18MB size");
     println!("24: 19MB size");
     println!("25: 20MB size");
+    println!("26: 50MB size");
+    println!("27: 60MB size");
+    println!("28: 70MB size");
+    println!("29: 80MB size");
 }
 
 async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
@@ -74,6 +78,10 @@ async fn data_path(size: &str) -> Result<String, Box<dyn Error>> {
         "23" => "src/data/test_data_18mb.csv",
         "24" => "src/data/test_data_19mb.csv",
         "25" => "src/data/test_data_20mb.csv",
+        "26" => "src/data/test_data_50mb.csv",
+        "27" => "src/data/test_data_60mb.csv",
+        "28" => "src/data/test_data_70mb.csv",
+        "29" => "src/data/test_data_80mb.csv",
         _ => return Err("Invalid size selected".into()),
     };
 
