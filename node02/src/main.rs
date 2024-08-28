@@ -58,7 +58,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     println!("sending");
     rdma.send_local_mr(lmr).await?;
-    tokio::time::sleep(Duration::from_secs(3)).await;
+    tokio::time::sleep(Duration::from_secs(9)).await;
     Ok(())
 }
 
