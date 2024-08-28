@@ -39,7 +39,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     let data_size = lmr.length();
     println!("Size: {}", data_size);
-    
+
     let message_contents = lmr.as_slice().to_vec();
 
     let processed_data = match process_data(message_contents) {  
@@ -56,6 +56,7 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     let _num = lmr.as_mut_slice().write(&processed_data)?;
 
+    println!("sending");
     rdma.send_local_mr(lmr).await?;
     tokio::time::sleep(Duration::from_secs(3)).await;
     Ok(())
