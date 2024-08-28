@@ -37,6 +37,9 @@ async fn rdma_send_handle_client(addr: String) -> Result<(), Box<dyn std::error:
 
     rdma.read(&mut lmr, &message).await?;
 
+    let data_size = lmr.length();
+    println!("Size: {}", data_size);
+    
     let message_contents = lmr.as_slice().to_vec();
 
     let processed_data = match process_data(message_contents) {  
